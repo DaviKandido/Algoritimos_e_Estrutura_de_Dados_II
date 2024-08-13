@@ -1,10 +1,12 @@
 // ATV - 4 - Slide 3
 
+
 public class TesteDeAtividades {
 
 
-
     public static void main(String[] args) {
+
+
 
       int x = 23, y = 23;
       x = x << 1;
