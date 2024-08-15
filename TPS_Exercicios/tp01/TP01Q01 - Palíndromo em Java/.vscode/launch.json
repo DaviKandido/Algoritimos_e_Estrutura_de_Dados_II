@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "palindromo",
+      "request": "launch",
+      "mainClass": "palindromo",
+      "projectName": "TP01Q01 - Palíndromo em Java_91f5e376"
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/TPS_Exercicios/tp01/TP01Q01 - Palíndromo em Java",
+      "program": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/TPS_Exercicios/tp01/TP01Q01 - Palíndromo em Java/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}
