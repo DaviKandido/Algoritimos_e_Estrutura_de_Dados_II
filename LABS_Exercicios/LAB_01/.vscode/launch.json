@@ -2,6 +2,27 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "ContarMaiusculas",
+      "request": "launch",
+      "mainClass": "ContarMaiusculas",
+      "projectName": "LAB_01_f3d30f55"
+    },
+    {
+      "type": "java",
+      "name": "LAB01Q01Aquecimento",
+      "request": "launch",
+      "mainClass": "LAB01Q01Aquecimento",
+      "projectName": "LAB_01_f3d30f55"
+    },
+    {
+      "type": "java",
+      "name": "ContarMaiusculasRecursivo",
+      "request": "launch",
+      "mainClass": "LAB01Q02_AquecimentoRecursivo.ContarMaiusculasRecursivo",
+      "projectName": "LAB_01_f3d30f55"
+    },
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",

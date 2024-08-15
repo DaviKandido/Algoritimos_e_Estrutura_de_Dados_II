@@ -1,5 +1,3 @@
-package LAB01Q02_AquecimentoRecursivo;
-
 import java.util.*;
 
 public class ContarMaiusculasRecursivo {
@@ -42,7 +40,7 @@ public class ContarMaiusculasRecursivo {
 
         Scanner sc = new Scanner(System.in);
 
-        String[] entrada = new String[50];
+        String[] entrada = new String[1000];
 
         int i = 0;
 

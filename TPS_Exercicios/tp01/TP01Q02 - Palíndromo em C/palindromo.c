@@ -17,7 +17,7 @@ void classificarPalindromo(char palavra[]) {
     char resposta[] = "SIM";
 
     for(int i = 0; i < dir; i++){
-        if(!((palavra[i] <= 'Z' && palavra[i] >= 'A') || (palavra[i] <= 'z' && palavra[i] >= 'a') || (palavra[i] < '10' && palavra[i] >= '0'))){
+        if(!((palavra[i] <= 'Z' && palavra[i] >= 'A') || (palavra[i] <= 'z' && palavra[i] >= 'a') || (palavra[i] <= '9' && palavra[i] >= '0'))){
             palavra[i] = 'A';
         }
     }

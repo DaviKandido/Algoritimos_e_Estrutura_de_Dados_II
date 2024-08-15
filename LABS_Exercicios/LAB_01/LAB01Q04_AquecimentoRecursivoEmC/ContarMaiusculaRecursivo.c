@@ -33,17 +33,13 @@ int contarLetrasMaiusculas(char entrada[], int index){
 
 void main(){
 
-        char entrada[50][100];
+        char entrada[1000][1000];
 
         int i = 0;
 
     do {
 
-        fgets(entrada[i], sizeof(entrada[i]), stdin);
-
-
-        //O "/n" impedia a interupção do loop
-        entrada[i][strcspn(entrada[i], "\n")] = '\0'; // Remover a nova linha do final da string
+        scanf(" %[^\n]", entrada[i]);
 
 
         i++;

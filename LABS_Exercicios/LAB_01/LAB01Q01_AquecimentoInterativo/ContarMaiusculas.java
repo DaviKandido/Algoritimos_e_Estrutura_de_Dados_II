@@ -36,7 +36,7 @@ public class ContarMaiusculas {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        String[] entrada = new String[50];
+        String[] entrada = new String[1000];
 
         int i = 0;
 
