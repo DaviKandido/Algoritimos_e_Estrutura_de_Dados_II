@@ -2,6 +2,83 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "LeitorHTML",
+      "request": "launch",
+      "mainClass": "LeitorHTML",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
+      "name": "AnalisadorPaginaWeb",
+      "request": "launch",
+      "mainClass": "AnalisadorPaginaWeb",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
+      "name": "AlgebraBooleana",
+      "request": "launch",
+      "mainClass": "AlgebraBooleana",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
+      "name": "arquivo",
+      "request": "launch",
+      "mainClass": "arquivo",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
+      "name": "is_Recursivo",
+      "request": "launch",
+      "mainClass": "is_Recursivo",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
+      "name": "is",
+      "request": "launch",
+      "mainClass": "is",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
+      "name": "palindromo",
+      "request": "launch",
+      "mainClass": "palindromo",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
+      "name": "aleatorio",
+      "request": "launch",
+      "mainClass": "aleatorio",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
+      "name": "CiframentoRecursivo",
+      "request": "launch",
+      "mainClass": "CiframentoRecursivo",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
+      "name": "Ciframento",
+      "request": "launch",
+      "mainClass": "Ciframento",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
+      "name": "palindromoRecursivo",
+      "request": "launch",
+      "mainClass": "palindromoRecursivo",
+      "projectName": "tp01_48af6718"
+    },
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",

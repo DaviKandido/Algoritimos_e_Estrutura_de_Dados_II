@@ -1,6 +1,6 @@
 import java.util.*;
 
-class palindromo {
+public class Ciframento {
 
     public static boolean isFim(String entrada){
 
@@ -8,26 +8,28 @@ class palindromo {
     }
 
 
+    public static String Ciframento(String entrada){
 
-    public static String verificaPolindromo(String polindromo){
+        int quant = entrada.length();
 
-        String resposta = "SIM";
-        int esq = 0;
-        int dir = polindromo.length() - 1;
+        String saida = "";
 
-        while(esq < dir){
-            if(polindromo.charAt(esq) != polindromo.charAt(dir)){
-                resposta = "NAO";
+        for(int n = 0; n < quant; n++){
+            char letra = (char)(entrada.charAt(n) + 3);
+
+            if(letra < (char) 127 && letra > (char) 32){
+                saida += letra;
+            }else{
+                saida += entrada.charAt(n);
             }
-            esq++;
-            dir--;
+
         }
 
 
-        return resposta;
+        return saida;
     }
-
     public static void main(String[] args) {
+
         Scanner sc = new Scanner(System.in);
 
         String entrada[] = new String[1000];
@@ -35,12 +37,13 @@ class palindromo {
         int i = 0;
 
         do{
+            
             entrada[i] = sc.nextLine();
 
         }while(isFim(entrada[i++]) == false);
 
-        for(int j = 0; j < i-1; j++){
-            System.out.println(verificaPolindromo(entrada[j]));
+        for(int j = 0; j < i -1; j++){
+            System.out.println(Ciframento(entrada[j]));
         }
 
         sc.close();

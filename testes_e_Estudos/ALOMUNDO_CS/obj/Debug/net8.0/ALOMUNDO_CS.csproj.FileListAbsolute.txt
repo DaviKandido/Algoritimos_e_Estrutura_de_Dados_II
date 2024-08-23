@@ -1,0 +1,15 @@
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/bin/Debug/net8.0/ALOMUNDO_CS
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/bin/Debug/net8.0/ALOMUNDO_CS.deps.json
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/bin/Debug/net8.0/ALOMUNDO_CS.runtimeconfig.json
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/bin/Debug/net8.0/ALOMUNDO_CS.dll
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/bin/Debug/net8.0/ALOMUNDO_CS.pdb
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/obj/Debug/net8.0/ALOMUNDO_CS.GeneratedMSBuildEditorConfig.editorconfig
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/obj/Debug/net8.0/ALOMUNDO_CS.AssemblyInfoInputs.cache
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/obj/Debug/net8.0/ALOMUNDO_CS.AssemblyInfo.cs
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/obj/Debug/net8.0/ALOMUNDO_CS.csproj.CoreCompileInputs.cache
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/obj/Debug/net8.0/ALOMUNDO_CS.sourcelink.json
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/obj/Debug/net8.0/ALOMUNDO_CS.dll
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/obj/Debug/net8.0/refint/ALOMUNDO_CS.dll
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/obj/Debug/net8.0/ALOMUNDO_CS.pdb
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/obj/Debug/net8.0/ALOMUNDO_CS.genruntimeconfig.cache
+/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/obj/Debug/net8.0/ref/ALOMUNDO_CS.dll
