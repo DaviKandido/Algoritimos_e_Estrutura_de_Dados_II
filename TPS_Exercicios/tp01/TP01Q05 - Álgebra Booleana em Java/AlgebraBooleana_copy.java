@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class AlgebraBooleana {
+public class AlgebraBooleana_copy {
 
 
     public static String TrocaVariaveis(String entrada, int valor[]){
@@ -74,7 +74,17 @@ public class AlgebraBooleana {
                 entrada.charAt(i + 9) == ')') {
 
                     if(entrada.charAt(i + 4) == entrada.charAt(i + 8))
+
+                    if( entrada.length() > 10){
+                        if( entrada.charAt(i+10) == ','){
+                            noAnd += entrada.charAt(i+4);
+                            noAnd += " ";
+                        }else
+                            noAnd += entrada.charAt(i+4);
+                    }else{
                         noAnd += entrada.charAt(i+4);
+                    }
+
                     else
                         noAnd += '0';
                 
@@ -126,11 +136,12 @@ public class AlgebraBooleana {
                 i += 8; // Avance de índice para pular o And()
 
             } else if(i + 12 < entrada.length()      && //Impede que acesse index inexistente
-                       entrada.charAt(i) == 'o'      &&
-                       entrada.charAt(i + 1) == 'r'  &&
-                       entrada.charAt(i + 2) == '('  &&
+            entrada.charAt(i) == 'o'      &&
+            entrada.charAt(i + 1) == 'r'  &&
+            entrada.charAt(i + 2) == '('  &&
 
-                      entrada.charAt(i + 12) == ')'){
+
+            entrada.charAt(i + 12) == ')'){
 
                     if(entrada.charAt(i + 3) == entrada.charAt(i + 11) && entrada.charAt(i + 3) == entrada.charAt(i + 7))
                         noOr += entrada.charAt(i+3);
@@ -138,37 +149,6 @@ public class AlgebraBooleana {
                         noOr += '1';
                 
                 i += 12; // Avance de índice para pular o And()
-
-                //Lidando com a excessão de um or de 8 letras
-            }else if(i + 7 < entrada.length()      && //Impede que acesse index inexistente
-            entrada.charAt(i) == 'o'      &&
-            entrada.charAt(i + 1) == 'r'  &&
-            entrada.charAt(i + 2) == '('  &&
-            
-
-            entrada.charAt(i + 7) == ')') {
-
-                if(entrada.charAt(i + 3) == entrada.charAt(i + 6))
-                    noOr += entrada.charAt(i+3);
-                else
-                    noOr += '1';
-            
-                i += 7; // Avance de índice para pular o And()
-
-            }else if(i + 16 < entrada.length()      && //Impede que acesse index inexistente
-            entrada.charAt(i) == 'o'      &&
-            entrada.charAt(i + 1) == 'r'  &&
-            entrada.charAt(i + 2) == '('  &&
-            
-
-            entrada.charAt(i + 16) == ')') {
-
-                if(entrada.charAt(i + 3) == '1' || entrada.charAt(i + 7) == '1' || entrada.charAt(i + 11) == '1' || entrada.charAt(i + 15) == '1')
-                    noOr += '1';
-                else
-                    noOr += '0';
-            
-                i += 16; // Avance de índice para pular o And()
 
             }else{
                 noOr += entrada.charAt(i);
@@ -188,17 +168,16 @@ public class AlgebraBooleana {
         saida = TrocaVariaveis(entrada, valor);
                 //System.out.println(saida);
 
-        //for(int i = 0; 1 < saida.length(); i++)
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; 1 < saida.length(); i++){
             saida = Remove_Not(saida);
-                    //System.out.println(saida);
+                    System.out.println(saida);
 
             saida = Remove_And(saida);
-                    //System.out.println(saida);
+                    System.out.println(saida);
 
             saida = Remove_or(saida);
+                    System.out.println(saida);
         }
-        //System.out.println(saida);
 
         
 

@@ -3,6 +3,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "AlgebraBooleana_copy",
+      "request": "launch",
+      "mainClass": "AlgebraBooleana_copy",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
       "name": "LeitorHTML",
       "request": "launch",
       "mainClass": "LeitorHTML",
