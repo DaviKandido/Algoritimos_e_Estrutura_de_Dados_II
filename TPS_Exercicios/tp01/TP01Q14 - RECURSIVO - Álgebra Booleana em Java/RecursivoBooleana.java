@@ -1,26 +1,23 @@
 import java.util.Scanner;
 
-public class AlgebraBooleana {
+public class RecursivoBooleana {
 
 
-    public static String TrocaVariaveis(String entrada, int valor[]){
+    public static String TrocaVariaveis(String entrada, int valor[], String TrocaTroca, int i){
 
-        String TrocaTroca = "";
-
-        for(int i = 1; i < entrada.length(); i++){
-
-            if(entrada.charAt(i) == 'A'){
-                TrocaTroca += valor[1];
-            }else if (entrada.charAt(i) == 'B'){
-                TrocaTroca += valor[2];
-            }else if (entrada.charAt(i) == 'C'){
-                TrocaTroca += valor[3];
-             }else{
-                  TrocaTroca += entrada.charAt(i);
-                }
+        if (i < entrada.length()) {
+            if (entrada.charAt(i) == 'A') {
+                TrocaTroca =  TrocaVariaveis(entrada, valor, TrocaTroca + valor[1], i + 1);
+            } else if (entrada.charAt(i) == 'B') {
+                TrocaTroca =  TrocaVariaveis(entrada, valor, TrocaTroca + valor[2], i + 1);
+            } else if (entrada.charAt(i) == 'C') {
+                TrocaTroca =  TrocaVariaveis(entrada, valor, TrocaTroca + valor[3], i + 1);
+            } else {
+                TrocaTroca = TrocaVariaveis(entrada, valor, TrocaTroca + entrada.charAt(i), i + 1);
+            }
         }
 
-        return TrocaTroca;  
+        return TrocaTroca; // Retorna o resultado final quando todos os caracteres foram processados
     }
 
     public static String Remove_Not(String entrada){
@@ -190,30 +187,31 @@ public class AlgebraBooleana {
     }
 
 
-    public static String AlgebraBooleana(String entrada, int valor[]) {
+    public static String AlgebraBooleana(String entrada, int valor[], int i) {
         
-        String saida = "";
 
-
-                //System.out.println(entrada);        
-        saida = TrocaVariaveis(entrada, valor);
+                //System.out.println(entrada);
+        if(i == 0)        
+            entrada = TrocaVariaveis(entrada, valor, "", 0);
                 //System.out.println(saida);
 
         //for(int i = 0; 1 < saida.length(); i++)
-        for(int i = 0; i < 10; i++){
-            saida = Remove_Not(saida);
+        if(i < 10){
+
+            entrada = Remove_Not(entrada);
                     //System.out.println(saida);
 
-            saida = Remove_And(saida);
+            entrada = Remove_And(entrada);
                     //System.out.println(saida);
 
-            saida = Remove_or(saida);
+            entrada = Remove_or(entrada);
                     //System.out.println(saida);
+            i++;
+            entrada = AlgebraBooleana(entrada, valor, i);
         }
 
-        
 
-        return saida;
+        return entrada;
     }
 
     public static void main(String[] args) {
@@ -242,7 +240,7 @@ public class AlgebraBooleana {
                 entrada = sc.nextLine();
 
 
-                System.out.println(AlgebraBooleana(entrada, valor));
+                System.out.println(AlgebraBooleana(entrada, valor, 0));
 
             }else{
                 parar = false;
