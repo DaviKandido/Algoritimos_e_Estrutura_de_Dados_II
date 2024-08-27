@@ -1,0 +1,138 @@
+// Atividade 5 - slide 4
+
+boolean doidao(char c) {
+    boolean resp = false;
+    int v = (int) c;
+    if (v == 65 || v == 69 || v == 73 || v == 79 || v == 85 || v == 97 || v == 101 || v == 105 || v == 111 || v == 117) {
+        resp = true;
+    }
+    return resp;
+}
+
+-> Resposta: O código a cima segundo a tabela ASCII esta verificando se o carácter entrado como parâmetro é uma vogal
+maiúscula ou minuscula (AEIOU ou aeiou)
+
+// Atividade 6 - slide 5
+
+boolean doidado(char c){
+    boolean resp = false;
+    int v = (int) c;
+    if (v == 65 || v == 69 || v == 73 || v == 79 || v == 85 || v == 97 || v == 101 || v == 105 ||
+    v == 111 || v == 117){
+        resp = true;
+    }
+    return resp;
+}
+
+char toUpper(char c){
+    return (c >= 'a' && c <= 'z') ? (char) (c - 32) : c;
+}
+
+boolean isVogal(char c){
+    c = toUpper(c);
+    return (c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U');
+}
+
+-> Resposta: Basicamente a mesma coisa do código anterior, no entanto esse faz a conversão do caracteres para
+facilitar a comparação 
+
+//slide 6
+
+boolean isLetra(char c){
+    return (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z');
+}
+
+boolean isConsoante(char c){
+    return (isLetra(c) == true && isVogal(c) == false);
+}
+
+// Atividade 7 - slide 7
+
+boolean isConsoante(String s, int i){
+    boolean resp= true;
+
+    if (i=s.length()){
+        resp = true;
+    } else if (isConsoante(s.chatAt(i) == false)){
+        resp = false;
+    } else {
+        resp=isConsoante(s, n+1);
+     } 
+    return resp;
+}
+
+// Atividade 8 - slide 16
+
+Resp -> A primeira opção é mais entendível
+
+// Atividade 8 - slide 17
+
+Unidade recuperarUnidadeComCodigoDeUCI(Unidade unidadeFilha) {
+    Unidade retorno = null;
+
+    if (unidadeFilha.getCodUci() != null && !unidadeFilha.getCodUci().isEmpty()) {
+        retorno = unidadeFilha;
+    } else {
+        retorno = unidadeFilha.getUnidadeSuperior();
+    }
+    while (retorno == null || retorno.getCodUci() == null || retorno.getCodUci().isEmpty()) {
+        retorno = retorno.getUnidadeSuperior();
+    }
+    return retorno;
+}
+
+Resp -> O código parece ser uma função em uma linguagem com suporte a orientação a objetos que busca uma unidade com um determinado código de UCI em uma unidade. A função começa definindo uma variável retorno com valor null, que será usada para armazenar a unidade encontrada.
+A função verifica primeiro se a unidade unidadeFilha possui um código de UCI válido e não vazio. Se sim, então a função retorna a unidade unidadeFilha como resultado.
+Caso contrário, a função busca a unidade superior da unidadeFilha e atualiza a variável retorno com essa unidade. Se a unidade superior também não possuir um código de UCI válido ou se não houver uma unidade superior, a função entra em um loop while para continuar buscando unidades superiores até encontrar uma unidade
+A função retorna a unidade encontrada, caso contrário retorna null se nenhuma unidade válida for encontrada.    
+
+O código tem alguns pontos positivos:
+    É bem autoexplicativa quanto ao objetivo de cada seção do código.
+    O código é fácil de ler e entender.
+    O código é eficiente, pois ele evita buscas desnecessárias ao verificar primeiro se a unidade unidadeFilha possui um código de UCI válido.
+No entanto, o código também tem alguns pontos negativos:
+    O código não verifica se a unidadeFilha é null. Isso pode causar um erro se a unidadeFilha for null.
+    O código não verifica se a hierarquia de unidades é finita. Isso pode causar um loop infinito se a hierarquia de unidades for infinita.
+    O código poderia ser mais robusto se ele também verificasse se a unidade unidadeFilha é válida.
+
+// Atividade 9 - slide 18
+
+int m1(int i) {
+  return i--;
+}
+
+int m2(int i) {
+  return --i;
+}
+
+Resp -> A diferença é que no primeiro código o retorno é feito primeiro, e em seguida é decrementado
+1 unidade em i, no entanto no outro código o decremento é feito antes do retorno, ou seja, nesta outra função
+o retorno sera o paramento decrementado 1 unidade, o que não ocorrera na 1ª função
+
+// Atividade 9 - slide 18
+
+byte b = 0; short s = 0; int i = 0; long l = 0;
+while (true) {
+  b++; s++; i++; l++;
+  System.out.println(b + " " + s + " " + i + " " + l);
+}
+    
+Resp ->
+
+ele imprimira na tela
+1 1 1 1
+2 2 2 2
+3 3 3 3
+4 4 4 4
+esta sequencia em loop até o programa seja interrompido
+
+// Atividade 10 - slide 20
+
+int x = 23, y = 23;
+x = x << 1;
+y = y >> 1;
+System.out.println("[" + x + " - " + y + "]");
+
+Resp ->
+por no x é deslocado o 1 do binário a direita : 10111 -> 101110
+enquanto no y é para a esquerda : 10111 -> 1011

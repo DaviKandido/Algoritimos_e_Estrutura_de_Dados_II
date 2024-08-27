@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "OrdenacaoSelecao",
+      "request": "launch",
+      "mainClass": "OrdenacaoSelecao",
+      "projectName": "u01 Fundamentos de Análise de Algoritmos_ef2eddb9"
+    },
+    {
+      "type": "java",
+      "name": "ordenacaoSelecao",
+      "request": "launch",
+      "mainClass": "ordenacaoSelecao",
+      "projectName": "u01 Fundamentos de Análise de Algoritmos_ef2eddb9"
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/Exercicios/u01 Fundamentos de Análise de Algoritmos",
+      "program": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/Exercicios/u01 Fundamentos de Análise de Algoritmos/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}
