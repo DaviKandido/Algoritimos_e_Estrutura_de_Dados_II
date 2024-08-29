@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 
 
     //Mostrar o conjunto a ser ordenado
-	 //mostrar(array, n);
+	 mostrar(array, n);
 		
 
     //Execucao do algoritmo de ordenacao
@@ -49,7 +49,8 @@ int main(int argc, char **argv) {
 
 
     //Mostrar o conjunto ordenado, tempo de execucao e status da ordenacao
-	 //algoritmo.mostrar(array, n);
+	mostrar(array, n);
+
 	 printf("Tempo para ordenar: %f s.\n", total);
 	 printf("isOrdenado: %s\n", isOrdenado(array, n) ? "true" : "false");
 

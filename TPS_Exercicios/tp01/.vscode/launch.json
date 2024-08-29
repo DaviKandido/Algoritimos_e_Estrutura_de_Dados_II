@@ -3,6 +3,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "RecursivoBooleana_b",
+      "request": "launch",
+      "mainClass": "RecursivoBooleana_b",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
+      "name": "LeitorHTML_MOD",
+      "request": "launch",
+      "mainClass": "LeitorHTML_MOD",
+      "projectName": "tp01_48af6718"
+    },
+    {
+      "type": "java",
       "name": "RecursivoBooleana",
       "request": "launch",
       "mainClass": "RecursivoBooleana",
