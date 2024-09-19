@@ -1,0 +1,59 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "ATIV_gonomo",
+      "request": "launch",
+      "mainClass": "ATIV_gonomo",
+      "projectName": "Estudos_ProvaPratica_1_1ff337e5"
+    },
+    {
+      "type": "java",
+      "name": "GnomoATIV",
+      "request": "launch",
+      "mainClass": "GnomoATIV",
+      "projectName": "Estudos_ProvaPratica_1_1ff337e5"
+    },
+    {
+      "type": "java",
+      "name": "PapaiNoel",
+      "request": "launch",
+      "mainClass": "PapaiNoel",
+      "projectName": "Estudos_ProvaPratica_1_1ff337e5"
+    },
+    {
+      "type": "java",
+      "name": "Medalhas",
+      "request": "launch",
+      "mainClass": "Medalhas",
+      "projectName": "Estudos_ProvaPratica_1_1ff337e5"
+    },
+    {
+      "type": "java",
+      "name": "Alienigena",
+      "request": "launch",
+      "mainClass": "Alienigena",
+      "projectName": "Estudos_ProvaPratica_1_1ff337e5"
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/Estudos_ProvaPratica_1",
+      "program": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/Estudos_ProvaPratica_1/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}
