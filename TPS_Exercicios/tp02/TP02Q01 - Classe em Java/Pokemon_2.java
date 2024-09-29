@@ -6,6 +6,7 @@
  * @update 2024-09-24
  */
 
+// ---------------------------------------------------------------------------------------------------- //
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,13 +19,13 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Scanner;
 
-public class Pokemon {
+public class Pokemon_2 {
 
     // static SimpleDateFormat ddf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
     // Global variables
-    //public static final String FILE_PATH = "pokemon.csv";
-    public static final String FILE_PATH = "/tmp/pokemon.csv";
+    public static final String FILE_PATH = "pokemon.csv";
+    //public static final String FILE_PATH = "/tmp/pokemon.csv";
 
     //public static ArrayList<Pokemon> allCharacters = new ArrayList<Pokemon>();
 
@@ -45,7 +46,7 @@ public class Pokemon {
     //---------------------------------- Construtores -------------------------------------------//
 
 
-    public Pokemon() {
+    public Pokemon_2() {
         this.id = 0;
         this.generation = 0;
         this.name = "";
@@ -59,7 +60,7 @@ public class Pokemon {
         this.captureDate = new Date();
     }
 
-    public Pokemon(int id, int generation, String name, String description, ArrayList<String>  types, ArrayList<String>  abilities, double weight, double height, int captureRate, boolean isLegendary, Date captureDate) {
+    public Pokemon_2(int id, int generation, String name, String description, ArrayList<String>  types, ArrayList<String>  abilities, double weight, double height, int captureRate, boolean isLegendary, Date captureDate) {
         this.id = id;
         this.generation = generation;
         this.name = name;

@@ -13,27 +13,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
+#include <errno.h>
 
 //----------------------------- Constantes --------------------------------//
-
-#define MAX_Pokemons 801
-
-//#define FILE_PATH "/tmp/pokemon.csv"
+#define MAX_POKEMONS 801
 #define FILE_PATH "pokemon.csv"
 
-
-#define MAX_generation 300
-#define MAX_name 100
-#define MAX_description 350
-#define MAX_types 10
-#define MAX_abilities 10
-#define MAX_weight 200
-#define MAX_height 250
+#define MAX_GENERATION_DIGITOS 3
+#define MAX_NAME 100
+#define MAX_DESCRIPTION 350
+#define MAX_TYPES 10
+#define MAX_ABILITIES 10
+#define MAX_WEIGHT_DIGITOS 20
+#define MAX_HEIGHT_DIGITOS 20
+#define MAX_CAPTURE_RATE_DIGITOS 3
+#define MAX_DATE 11
 
 #define MAX_LINE_SIZE 1000
-
-
 
 //----------------------------- END Constantes --------------------------------//
 
@@ -50,10 +46,10 @@ typedef struct Pokemon{
 
     int id;
     int generation;
-    char *name;
-    char *description;
-    char *types[10];
-    char *abilities[10];
+    char name[MAX_NAME];
+    char description[MAX_DESCRIPTION];
+    char types[MAX_TYPES][MAX_NAME];
+    char abilities[MAX_ABILITIES][MAX_NAME];
     double weight;
     double height;
     int captureRate;
@@ -65,7 +61,7 @@ typedef struct Pokemon{
 
 //-------------------------- Global variables -----------------------------//
 
-Pokemon pokemons[1000];
+Pokemon pokemons[MAX_POKEMONS];
 int PokemonsLength = 0;
 
 //----------------------------- is Fim --------------------------------//
@@ -79,11 +75,8 @@ void substring(char *string, char *stringStart, int length) {
 }
 
 //--------------------------- proccess_attribute----------------------------//
-
-//Verificar se esta correto
 void proccess_attribute (char *attribute, char **substringStart, char **substringEnd, bool isFirstAttribute, bool isStringArray){
 
-    // Skip first comma
     if(!isFirstAttribute) {
         
         if(*substringEnd != NULL) *substringStart = *substringEnd + 1;
@@ -99,7 +92,6 @@ void proccess_attribute (char *attribute, char **substringStart, char **substrin
         }
         else *substringEnd = strchr(*substringStart, ',');
         
-        // Get substring
         if(*substringEnd) {
             
             substring(attribute, *substringStart, *substringEnd - *substringStart);
@@ -108,20 +100,17 @@ void proccess_attribute (char *attribute, char **substringStart, char **substrin
         }
         else strcpy(attribute, *substringStart);
 
-        // Set default value if attribute is empty
         if(strcmp(attribute, "") == 0 || attribute[0] == '\n' || attribute[0] == '\r' || attribute[0] == '\0') strcpy(attribute, "N/A");
 
-        // Clean \n from the end of the string
         if(attribute[strlen(attribute) - 1] == '\n' || attribute[strlen(attribute) - 1] == '\r') attribute[strlen(attribute) - 1] = '\0';
     } 
     else {
         
-        // Check if the first character is a [
         if((*substringStart)[0] == '[') {
 
             *substringStart = *substringStart + 1;
 
-            if((*substringStart)[0] == ']') strcpy(attribute, ""); // Case: []
+            if((*substringStart)[0] == ']') strcpy(attribute, ""); 
             else {
 
                 char *tempConcat = (char *) calloc(MAX_LINE_SIZE, sizeof(char));
@@ -133,19 +122,16 @@ void proccess_attribute (char *attribute, char **substringStart, char **substrin
                     *substringStart = *substringStart + 1;
 
                     if((*substringStart)[0] == ',') break;
-                    else if((*substringStart)[0] == '\'') { // Case: "['example', 'example']"
+                    else if((*substringStart)[0] == '\'') { 
                            
                         *substringStart = *substringStart + 1;
                         *substringEnd = strchr(*substringStart, '\'');
 
-                        // Get substring
                         if(*substringEnd) {
 
-                            // Create tmp name
                             char tmp[MAX_LINE_SIZE];
                             substring(tmp, *substringStart, *substringEnd - *substringStart);
 
-                            // Concat tempConcat with tmp
                             strcat(tempConcat, tmp);
                             strcat(tempConcat, ", ");
 
@@ -154,10 +140,8 @@ void proccess_attribute (char *attribute, char **substringStart, char **substrin
                     }
                 }
 
-                // Get substring
                 strcpy(attribute, tempConcat);
 
-                // Clean "attribute" removing last 2 characters
                 attribute[strlen(attribute) - 2] = '\0';
             }
         } 
@@ -168,39 +152,219 @@ void proccess_attribute (char *attribute, char **substringStart, char **substrin
 
 //------------------------- END proccess_attribute--------------------------//
 
+
+
 //--------------------------- GETS----------------------------//
 
+int pokemon_getId(Pokemon *pokemon) { return pokemon -> id;}
+int pokemon_getGeneration(Pokemon *pokemon) { return pokemon -> generation;}
+char *pokemon_getName(Pokemon *pokemon) { return pokemon -> name;}
+char *pokemon_getDescription(Pokemon *pokemon) { return pokemon -> description;}
+
+void pokemon_getTypes (Pokemon *pokemon, char *types) { 
+    
+    strcpy(types, "[");
+
+    for(int i = 0; i < MAX_TYPES; i++) {
+
+        if(strcmp(pokemon -> types[i], "") != 0) {
+
+            strcat(types, pokemon -> types[i]);
+            
+            if(strcmp(pokemon -> types[i + 1], "") != 0) strcat(types, ", ");
+        }
+    }
+
+    strcat(types, "]");
+}
+
+void pokemon_getAbilities (Pokemon *pokemon, char *abilities) { 
+    
+    strcpy(abilities, "[");
+
+    for(int i = 0; i < MAX_ABILITIES; i++) {
+
+        if(strcmp(pokemon -> abilities[i], "") != 0) {
+
+            strcat(abilities, pokemon -> abilities[i]);
+            
+            if(strcmp(pokemon -> abilities[i + 1], "") != 0) strcat(abilities, ", ");
+        }
+    }
+
+    strcat(abilities, "]");
+}
+
+double pokemon_getWeight (Pokemon *pokemon) {return pokemon -> weight; }
+double pokemon_getHeight(Pokemon *pokemon) {return pokemon -> height; }
+int pokemon_getCaptureRate(Pokemon *pokemon) {return pokemon -> captureRate; }
+bool pokemon_getIsLegendary(Pokemon *pokemon) {return pokemon -> isLegendary; }
+
+void pokemon_getCaptureDate(Pokemon *pokemon, char *captureDate) {
+    
+    if(pokemon -> captureDate.day != -1 && pokemon -> captureDate.month != -1 && pokemon -> captureDate.year != -1) {
+
+        sprintf(captureDate, "%02d/%02d/%04d", pokemon -> captureDate.day, pokemon -> captureDate.month, pokemon -> captureDate.year);
+    } else strcpy(captureDate, "");
+}
 //------------------------- END GETS --------------------------//
 
-//--------------------------- SETS ----------------------------//
 
+//--------------------------- SETS ----------------------------//
+void pokemon_setId(Pokemon *pokemon, char *idStr) {
+    char *endPtr;
+    errno = 0;
+    
+    long id = strtol(idStr, &endPtr, 10);
+
+    if (endPtr == idStr || errno == ERANGE || id > 850 || id < -1) {
+        printf("Erro: Atributo '%s' não pôde ser convertido para int\n", idStr);
+        pokemon->id = -1; 
+    } else {
+        pokemon->id = (int)id; 
+    }
+}
+void pokemon_setGeneration(Pokemon *pokemon, char *generationStr) {
+    char *endPtr;
+    errno = 0;
+    
+    long generation = strtol(generationStr, &endPtr, 10);
+
+    if (endPtr == generationStr || errno == ERANGE || generation > 850 || generation < -1) {
+        printf("Erro: Atributo '%s' não pôde ser convertido para int\n", generationStr);
+        pokemon->generation = -1; 
+    } else {
+        pokemon->generation = (int)generation;
+    }
+}
+void pokemon_setName(Pokemon *pokemon, char *name) { strcpy(pokemon -> name, name); }
+void pokemon_setDescription(Pokemon *pokemon, char *description) { strcpy(pokemon -> description, description); }
+
+void pokemon_setTypes(Pokemon *pokemon, char *types) {
+
+    char tempTypes[MAX_LINE_SIZE];
+    strcpy(tempTypes, types);
+
+    char *token = strtok(tempTypes, ",");
+    int i = 0;
+
+    while (token != NULL && i < MAX_TYPES) {
+        
+        while (*token == ' ') token++;
+
+        int len = strlen(token);
+
+        while (len > 0 && token[len - 1] == ' ') {
+
+            token[len - 1] = '\0';
+            len--;
+        }
+
+        strcpy(pokemon -> types[i++], token);
+        token = strtok(NULL, ",");
+    }
+}
+
+void pokemon_setAbilities(Pokemon *pokemon, char *abilities) {
+
+    char tempAbilities[MAX_LINE_SIZE];
+    strcpy(tempAbilities, abilities);
+
+    char *token = strtok(tempAbilities, ",");
+    int i = 0;
+
+    while (token != NULL && i < MAX_ABILITIES) {
+        
+        while (*token == ' ') token++;
+
+        int len = strlen(token);
+
+        while (len > 0 && token[len - 1] == ' ') {
+
+            token[len - 1] = '\0';
+            len--;
+        }
+
+        strcpy(pokemon -> abilities[i++], token);
+        token = strtok(NULL, ",");
+    }
+}
+
+void pokemon_setWeight(Pokemon *pokemon, char *weightStr) {
+    char *endPtr;  
+    errno = 0;     
+    
+    double weight = strtod(weightStr, &endPtr);
+
+    if (endPtr == weightStr || errno == ERANGE) {
+        printf("Erro: Atributo '%s' não pôde ser convertido para double\n", weightStr);
+        pokemon->weight = 0.0; 
+    } else {
+        pokemon->weight = weight;
+    }
+}
+
+
+void pokemon_setHeight(Pokemon *pokemon, char *heightStr) {
+    char *endPtr;  
+    errno = 0;     
+    
+    double height = strtod(heightStr, &endPtr);
+
+    if (endPtr == heightStr || errno == ERANGE) {
+        printf("Erro: Atributo '%s' não pôde ser convertido para double\n", heightStr);
+        pokemon->height = 0.0; 
+    } else {
+        pokemon->height = height; 
+    }
+}
+
+void pokemon_setCaptureRate(Pokemon *pokemon, char *captureRateStr) {
+    char *endPtr; 
+    errno = 0;      
+    
+    long captureRate = strtol(captureRateStr, &endPtr, 10);
+
+    if (endPtr == captureRateStr || errno == ERANGE || captureRate > 850 || captureRate < -1) {
+        printf("Erro: Atributo '%s' não pôde ser convertido para int\n", captureRateStr);
+        pokemon->captureRate = -1; 
+    } else {
+        pokemon->captureRate = (int)captureRate;
+    }
+}
+
+void pokemon_setIsLegendary(Pokemon *pokemon, bool isLegendary) { pokemon -> isLegendary = isLegendary; }
+
+void pokemon_setCaptureDate(Pokemon *pokemon, char *captureDate) { 
+
+    if(strlen(captureDate) >= 8 && strlen(captureDate) <= 10) {
+
+        char *token = strtok(captureDate, "/");
+
+        pokemon -> captureDate.day = atoi(token);
+        token = strtok(NULL, "/");
+        pokemon -> captureDate.month = atoi(token);
+        token = strtok(NULL, "/");
+        pokemon -> captureDate.year = atoi(token);
+    }
+}
 //------------------------- END SETS --------------------------//
 
 
 //--------------------------- Pokemon_newBlanck ----------------------------//
-
 Pokemon Pokemon_newBlack() {
     Pokemon pokemon;
 
     pokemon.id = -1;
-
     pokemon.generation = -1;
-
-    pokemon.name = (char *) calloc(MAX_name, sizeof(char));
     strcpy(pokemon.name, "");
-
-    pokemon.description= (char *) calloc(MAX_description, sizeof(char));
     strcpy(pokemon.description, "");
 
-    // inicializa types
-    for(int i = 0; i < MAX_types; i++) {
-        pokemon.types[i] = (char *) calloc(MAX_types, sizeof(char));
+    for(int i = 0; i < MAX_TYPES; i++) {
         strcpy(pokemon.types[i], "");
     }
 
-   // inicializa abilities
-    for(int i = 0; i < MAX_abilities; i++) {
-        pokemon.abilities[i] = (char *) calloc(MAX_abilities, sizeof(char));
+   for(int i = 0; i < MAX_ABILITIES; i++) {
         strcpy(pokemon.abilities[i], "");
     }
 
@@ -217,15 +381,30 @@ Pokemon Pokemon_newBlack() {
 
 //------------------------- END Pokemon_newBlanck --------------------------//
 
-//--------------------------- Pokemon_new ----------------------------//
-
-//------------------------- END Pokemon_new --------------------------//
-
-//--------------------------- Pokemon_Clone ----------------------------//
-
-//------------------------- END Pokemon_Clone --------------------------//
-
 //--------------------------- Pokemon_print ----------------------------//
+void pokemon_print(Pokemon *pokemon) {
+    char formattedDate[MAX_DATE]; 
+    pokemon_getCaptureDate(pokemon, formattedDate);
+
+    char types[MAX_LINE_SIZE];
+    pokemon_getTypes(pokemon, types);
+
+    char abilities[MAX_LINE_SIZE];
+    pokemon_getAbilities(pokemon, abilities);
+
+    printf("[#%d -> %s: %s - %s - %s - %.2fkg - %.2fm - %d%% - %s - %d gen] - %s\n", 
+           pokemon->id, 
+           pokemon->name, 
+           pokemon->description,
+           types,
+           abilities,
+           pokemon->weight, 
+           pokemon->height, 
+           pokemon->captureRate, 
+           pokemon->isLegendary ? "true" : "false", 
+           pokemon->generation, 
+           formattedDate);
+}
 
 //------------------------- END Pokemon_print --------------------------//
 
@@ -233,21 +412,67 @@ Pokemon Pokemon_newBlack() {
 Pokemon Pokemon_read(char *line){
 
     Pokemon pokemon = Pokemon_newBlack();
-zz    char *substringStart = line;
+
+    char *substringStart = line;
     char *substringEnd = NULL;
     char attribute[MAX_LINE_SIZE];
 
+
     proccess_attribute(attribute, &substringStart, &substringEnd, true, false);
+    pokemon_setId(&pokemon,attribute); 
+
+    proccess_attribute(attribute, &substringStart, &substringEnd, false, false);
+    pokemon_setGeneration(&pokemon, attribute); 
+
+    proccess_attribute(attribute, &substringStart, &substringEnd, false, false);
+    pokemon_setName(&pokemon, attribute);
+
+    proccess_attribute(attribute, &substringStart, &substringEnd, false, false);
+    pokemon_setDescription(&pokemon, attribute);
+
+    proccess_attribute(attribute, &substringStart, &substringEnd, false, true);
+    pokemon_setTypes(&pokemon, attribute);
+
+    proccess_attribute(attribute, &substringStart, &substringEnd, false, true);
+    pokemon_setAbilities(&pokemon, attribute);
+
+    proccess_attribute(attribute, &substringStart, &substringEnd, false, false);
+    pokemon_setWeight(&pokemon, attribute); 
+
+    proccess_attribute(attribute, &substringStart, &substringEnd, false, false);
+    pokemon_setHeight(&pokemon, attribute); 
+
+    proccess_attribute(attribute, &substringStart, &substringEnd, false, false);
+    pokemon_setCaptureRate(&pokemon, attribute); 
+
+    proccess_attribute(attribute, &substringStart, &substringEnd, false, false);
+    pokemon_setIsLegendary(&pokemon, strcmp(attribute, "0") == 0);
+
+    if(attribute[strlen(attribute) - 1] == '\n' || attribute[strlen(attribute) - 1] == '\r') attribute[strlen(attribute) - 1] = '\0';
+
+    proccess_attribute(attribute, &substringStart, &substringEnd, false, false);
+    pokemon_setCaptureDate(&pokemon, attribute);
+
+    return pokemon;
 }
 //--------------------------- END Pokemon_read ------------------------------//
 
+//---------------------------  Pokemon_searchById ------------------------------//
+Pokemon *pokemon_searchById(int id) {
+
+    for(int i = 0; i < PokemonsLength; i++) {
+        if(pokemons[i].id == id) return &pokemons[i];
+    }
+    return NULL;
+}
+
+//--------------------------- END Pokemon_searchById ----------------------------//
 
 //----------------------------- startPokemons --------------------------------//
 
-void startPokemons(){ // Função inicia leituras de pokemons
+void startPokemons(){ 
 
-   // Open file
-    FILE *fp;
+   FILE *fp;
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
@@ -256,29 +481,25 @@ void startPokemons(){ // Função inicia leituras de pokemons
 
     if(fp == NULL) {
 
-        perror("x Error opening file");
+        perror("x Error ao abrir arquivo");
         exit(EXIT_FAILURE);
     }
 
-    // Skip first line
     getline(&line, &len, fp);
 
-        // Read all lines
     while((read = getline(&line, &len, fp)) != -1) {
 
-        // Read character from line
         Pokemon pokemon = Pokemon_read(line);
 
         pokemons[PokemonsLength++] = pokemon;
 
-        if(PokemonsLength >= 801) {
+        if(PokemonsLength >= MAX_POKEMONS) {
 
             perror("x Max characters reached");
             exit(EXIT_FAILURE);
         }
     }
 
-    // Close file and free memory
     fclose(fp);
 
     if(line) free(line);
@@ -288,35 +509,26 @@ void startPokemons(){ // Função inicia leituras de pokemons
 
 int main() {
 
-    // ----------------------------------------------------------------- //
-
-    // #1 - Start - Read all characters from file
     startPokemons();
 
-    // ----------------------------------------------------------------- //
-
-    //#2 - Read input and print characters from pub.in id entries
     char id[10];
     scanf(" %[^\n]s", id);
     bool parar = true;
 
     while(parar) {
 
-        // Clean \n from the end of the string
         if(id[strlen(id) - 1] == '\n' || id[strlen(id) - 1] == '\r') id[strlen(id) - 1] = '\0';
 
         if(isFim(id)) {
             parar = false;
         }else {
-            
-            int id_int = (int) id;
+
+            int id_int = atoi(id);
 
             Pokemon *pokemon = pokemon_searchById(id_int);
 
             if(pokemon) pokemon_print(pokemon);
             else printf("x Pokemon not found!\n");
-
-            // ------------------------- //
     
             scanf(" %[^\n]s", id);
         }
