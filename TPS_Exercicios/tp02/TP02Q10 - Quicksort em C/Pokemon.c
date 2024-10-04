@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <time.h>
 
 #define MAX 100 
 #define TAMANHO 801
@@ -48,7 +49,6 @@ Pokemon* procurar(Pokemon* pokemons, int id) {
         }
     }
     
-
     return pokemon; 
 }
 
@@ -190,59 +190,125 @@ Pokemon* lerTodoArquivo(char fileName[]) {
 }
 
 // Função para imprimir informações de um Pokémon
-void printar(Pokemon pokemon) {
-    printf("[#%d -> %s: %s - ", pokemon.id, pokemon.name, pokemon.description);
+void printarPokemon(Pokemon *pokemon) {
+    printf("[#%d -> %s: %s - ", pokemon->id, pokemon->name, pokemon->description);
 
     // Imprime os tipos
-    printf("['%s'", pokemon.type[0]);
-    if (strlen(pokemon.type[1]) > 0) {
-        printf(", '%s'", pokemon.type[1]);
+    printf("['%s'", pokemon->type[0]);
+    if (strlen(pokemon->type[1]) > 0) {
+        printf(", '%s'", pokemon->type[1]);
     }
     printf("] - ");
 
     // Imprime as habilidades
     printf("[");
-    for (int i = 0; strlen(pokemon.abilities[i]) > 0; i++) {
-        printf("'%s'", pokemon.abilities[i]);
-        if (strlen(pokemon.abilities[i + 1]) > 0) {
+    for (int i = 0; strlen(pokemon->abilities[i]) > 0; i++) {
+        printf("'%s'", pokemon->abilities[i]);
+        if (strlen(pokemon->abilities[i + 1]) > 0) {
             printf(", ");
         }
     }
     printf("] - ");
 
     printf("%.1lfkg - %.1lfm - %d%% - %s - %d gen] - %02d/%02d/%d\n", 
-           pokemon.weight, 
-           pokemon.height, 
-           pokemon.captureRate, 
-           pokemon.isLegendary ? "true" : "false", 
-           pokemon.generation,
-           pokemon.captureDate.dia, 
-           pokemon.captureDate.mes, 
-           pokemon.captureDate.ano);
+           pokemon->weight, 
+           pokemon->height, 
+           pokemon->captureRate, 
+           pokemon->isLegendary ? "true" : "false", 
+           pokemon->generation,
+           pokemon->captureDate.dia, 
+           pokemon->captureDate.mes, 
+           pokemon->captureDate.ano);
+}
+void GravarArquivoDeExecucao(const char *Filename, double cpu_timeFim_used, int Comparacoes) {
+
+    FILE *arquivo = fopen(Filename, "w+");
+
+    if (arquivo == NULL) {
+        printf("ERRO ao gerar o arquivo\n");
+    } else {
+
+        fprintf(arquivo, "Matricula: 857859 \t Tempo de Execução: %ld ms \t Comparações: %d\n", cpu_timeFim_used, Comparacoes);
+        
+        fclose(arquivo);
+    }
+}
+void swap(Pokemon **pokemon, int i, int j){
+    Pokemon *tmp = pokemon[i];
+    pokemon[i] = pokemon[j];
+    pokemon[j] = tmp;
+}
+
+void OrdenarPokemonsQuickSort(Pokemon **pokemon, int esq, int dir, int *Comparacoes) {
+    int i = esq, j = dir;
+    int pivo = pokemon[(esq + dir) / 2]->id;
+
+    while (i <= j) {
+        while (pokemon[i]->id < pivo) {
+            (*Comparacoes)++;
+            i++;
+        }
+        while (pokemon[j]->id > pivo) {
+            (*Comparacoes)++;
+            j--;
+        }
+        if (i <= j) {
+            swap(pokemon, i, j);
+            i++;
+            j--;
+        }
+    }
+    if (esq < j)
+        OrdenarPokemonsQuickSort(pokemon, esq, j, Comparacoes);
+    if (i < dir)
+        OrdenarPokemonsQuickSort(pokemon, i, dir, Comparacoes);
 }
 
 int main(void) {
-    int id;
-    char entrada[20];
-    
+    clock_t start, end;
+    double cpu_timeFim_used;
+    int Comparacoes = 0;
+
+    // Inicia a contagem do tempo
+    start = clock();
+
+    // Leitura de dados e inicialização dos pokémons
     Pokemon* pokemons = lerTodoArquivo(FILE_PATH);
-
+    
     if (!pokemons) {
-        printf("Pokemons nao inicializados");
+        printf("Pokemons nao inicializados\n");
+    }
+
+    // Ordenação usando QuickSort
+    Pokemon *pokemonPtrs[TAMANHO];
+    for (int i = 0; i < TAMANHO; i++) {
+        pokemonPtrs[i] = &pokemons[i];
+    }
+    OrdenarPokemonsQuickSort(pokemonPtrs, 0, TAMANHO - 1, &Comparacoes);
+
+    for (int i = 0; i < TAMANHO; i++) {
+        printarPokemon(pokemonPtrs[i]);
     }
     
-    while (scanf("%s", entrada) && isFim(entrada) == false) {
-
+    // Processo de busca e print
+    char entrada[20];
+    int id;
+    while (scanf("%s", entrada) && !isFim(entrada)) {
         sscanf(entrada, "%d", &id);
-
-        Pokemon *PokemonEncontrado = procurar(pokemons, id);
-        
-        if(id <= 801) printar(*PokemonEncontrado);
+        if (id <= TAMANHO) {
+            Pokemon *PokemonEncontrado = procurar(pokemons, id);
+            if (PokemonEncontrado != NULL) {
+                printarPokemon(PokemonEncontrado);
+            }
+        }
     }
 
-    
+    end = clock();
+    cpu_timeFim_used = ((double)(end - start));
 
+    GravarArquivoDeExecucao("857859_quicksort.txt", cpu_timeFim_used, Comparacoes);
 
     free(pokemons);
+
     return 0;
 }

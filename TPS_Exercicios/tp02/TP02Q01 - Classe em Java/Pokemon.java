@@ -188,12 +188,12 @@ public class Pokemon {
 
     //---------------------------------- Ler Pokemon -------------------------------------------//
 
-    public static Pokemon lerPokemon(int id) {
+    public static Pokemon[] lerPokemon(Pokemon pokemon[]) {
 
-        Pokemon pokemonReturn = null;
+        int i = 0;
+
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
           
-            Pokemon pokemon = null;
 
             String line = br.readLine(); //Descarta a primeira leitura
 
@@ -201,12 +201,8 @@ public class Pokemon {
 
             while (line != null) {
 
-                pokemon =  criarPokemon(line);
+                pokemon[i++] =  criarPokemon(line);
                 
-                if(pokemon.getId() == id) {
-                    pokemonReturn = pokemon;
-                }
-
                 line = br.readLine();
             }
         } catch (IOException e) {
@@ -214,17 +210,20 @@ public class Pokemon {
         }
 
         // Retorna null se o Pokémon com o ID especificado não for encontrado
-        return pokemonReturn;
+        return pokemon;
     }
 
 
     public static void main(String[] args) {
+
         Scanner sc = new Scanner(System.in);
     
         boolean parar = true;
         int i = 0;
     
-        Pokemon pokemon[] = new Pokemon[1000];
+        Pokemon pokemon[] = new Pokemon[801];
+        
+        pokemon = lerPokemon(pokemon);
     
         // Ler até encontrar "FIM"
         while (parar) {
@@ -233,14 +232,13 @@ public class Pokemon {
             if (isFim(entrada)) {
                 parar = false;
             } else {
-                int id = Integer.parseInt(entrada); // Assumindo que o usuário insere um ID.
-                pokemon[i] = lerPokemon(id);
+                int id = Integer.parseInt(entrada); // usuário insere um ID.
+
     
-                if (pokemon[i] != null) {
-                    pokemon[i].printPokemon();
-                    i++;
-                } else {
-                    System.out.println("Pokémon não encontrado.");
+                for(int j = 0; j < 801; j++){
+                    if(pokemon[j].getId() == id){
+                        pokemon[j].printPokemon();
+                    }
                 }
             }
         }

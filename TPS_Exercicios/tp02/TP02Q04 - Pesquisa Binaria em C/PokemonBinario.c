@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <time.h>
 
 #define MAX 100 
 #define TAMANHO 801
@@ -38,21 +39,44 @@ bool isFim(char* entrada){
 }
 
 // Função para procurar um Pokémon com o di ID
-Pokemon procurar(Pokemon* pokemons, int id) {
-    for (int i = 0; i < TAMANHO; i++) {
-        if (pokemons[i].id == id) {
-            return pokemons[i];
-        }
-    }
+// Pokemon* procurar(Pokemon* pokemons, int id) {
     
-    Pokemon pokemon;
-    pokemon.id = -1;
-    return pokemon; 
+//     Pokemon *pokemon;
+    
+//     for (int i = 0; i < TAMANHO; i++) {
+//         if (pokemons[i].id == id) {
+//             pokemon = &pokemons[i];
+//         }
+//     }
+    
+//     return pokemon; 
+// }
+
+
+Pokemon *procuraBinaria(Pokemon** pokemons, int id, int *conparacoes) {
+    
+    bool resp = false;
+    int dir = 801-1, esq = 0, meio;
+    while(esq <= dir){
+        meio = (esq+dir) / 2;
+        if(id == pokemons[meio]->id){
+            resp = true;
+            esq = 801;
+            (*conparacoes)++;
+        }else if(id > pokemons[meio]->id){
+            esq = meio + 1;
+            (*conparacoes)++;
+        } else{
+            dir = meio -1;
+        }
+    } 
+
+    if(resp) return pokemons[meio];
 }
 
 void removerOcorrencias(char *str, char caractere) {
     int i, j = 0;
-    int comprimento = strlen(str);
+    size_t comprimento = strlen(str);
     
     for (i = 0; i < comprimento; i++) { // Se o caractere atual não for o que deve ser removido
         
@@ -88,18 +112,17 @@ char *extrairAtributo(char **str, char delimitador) {
 
 // Função para ler o arquivo CSV e carregar os Pokémons
 Pokemon* lerTodoArquivo(char fileName[]) {
-    Pokemon* pokemons = (Pokemon*)malloc(TAMANHO * sizeof(Pokemon));
+
+    Pokemon* pokemons = (Pokemon*)malloc(TAMANHO * sizeof(Pokemon)); //Inicializa Pokemons
 
     if (!pokemons) {
         printf("Erro de alocação de memória.\n");
-        return NULL;
     }
 
     FILE* arquivo = fopen(fileName, "r");
     if (!arquivo) {
         printf("Erro ao abrir o arquivo.\n");
         free(pokemons);
-        return NULL;
     }
 
     char linha[500];
@@ -158,7 +181,7 @@ Pokemon* lerTodoArquivo(char fileName[]) {
             }
         }
 
-        char* lixo = extrairAtributo(&token, ','); //Libra da string virgula sobressalente em habilidades
+        char* lixo = extrairAtributo(&token, ','); //Livra da string virgulas sobressalente em habilidades
 
 
         temp->weight = atof(extrairAtributo(&token, ','));
@@ -189,65 +212,141 @@ Pokemon* lerTodoArquivo(char fileName[]) {
 }
 
 // Função para imprimir informações de um Pokémon
-void printar(Pokemon pokemon) {
-    printf("[#%d -> %s: %s - ", pokemon.id, pokemon.name, pokemon.description);
+void printarPokemon(Pokemon *pokemon) {
+    printf("[#%d -> %s: %s - ", pokemon->id, pokemon->name, pokemon->description);
 
     // Imprime os tipos
-    printf("['%s'", pokemon.type[0]);
-    if (strlen(pokemon.type[1]) > 0) {
-        printf(", '%s'", pokemon.type[1]);
+    printf("['%s'", pokemon->type[0]);
+    if (strlen(pokemon->type[1]) > 0) {
+        printf(", '%s'", pokemon->type[1]);
     }
     printf("] - ");
 
     // Imprime as habilidades
-
     printf("[");
-    for (int i = 0; strlen(pokemon.abilities[i]) > 0; i++) {
-        printf("'%s'", pokemon.abilities[i]);
-        if (strlen(pokemon.abilities[i + 1]) > 0) {
+    for (int i = 0; strlen(pokemon->abilities[i]) > 0; i++) {
+        printf("'%s'", pokemon->abilities[i]);
+        if (strlen(pokemon->abilities[i + 1]) > 0) {
             printf(", ");
         }
     }
     printf("] - ");
 
     printf("%.1lfkg - %.1lfm - %d%% - %s - %d gen] - %02d/%02d/%d\n", 
-           pokemon.weight, 
-           pokemon.height, 
-           pokemon.captureRate, 
-           pokemon.isLegendary ? "true" : "false", 
-           pokemon.generation,
-           pokemon.captureDate.dia, 
-           pokemon.captureDate.mes, 
-           pokemon.captureDate.ano);
+           pokemon->weight, 
+           pokemon->height, 
+           pokemon->captureRate, 
+           pokemon->isLegendary ? "true" : "false", 
+           pokemon->generation,
+           pokemon->captureDate.dia, 
+           pokemon->captureDate.mes, 
+           pokemon->captureDate.ano);
+}
+void GravarArquivoDeExecucao(const char *Filename, double cpu_timeFim_used, int Comparacoes) {
+
+    FILE *arquivo = fopen(Filename, "w+");
+
+    if (arquivo == NULL) {
+        printf("ERRO ao gerar o arquivo\n");
+    } else {
+
+        fprintf(arquivo, "Matricula: 857859 \t Tempo de Execução: %lf ms \t Comparações: %d\n", cpu_timeFim_used, Comparacoes);
+        
+        fclose(arquivo);
+    }
+}
+void swap(Pokemon **pokemon, int i, int j){
+    Pokemon *tmp = pokemon[i];
+    pokemon[i] = pokemon[j];
+    pokemon[j] = tmp;
+}
+
+void OrdenarPokemonsQuickSort(Pokemon **pokemon, int esq, int dir) {
+    int i = esq, j = dir;
+    int pivo = pokemon[(esq + dir) / 2]->id;
+
+    while (i <= j) {
+        while (pokemon[i]->id < pivo) {
+            i++;
+        }
+        while (pokemon[j]->id > pivo) {
+            j--;
+        }
+        if (i <= j) {
+            swap(pokemon, i, j);
+            i++;
+            j--;
+        }
+    }
+    if (esq < j)
+        OrdenarPokemonsQuickSort(pokemon, esq, j);
+    if (i < dir)
+        OrdenarPokemonsQuickSort(pokemon, i, dir);
 }
 
 int main(void) {
-    int id;
-    int i = 0;
-    char entrada[20];
-    
-    Pokemon* pokemons = lerTodoArquivo(FILE_PATH);
+    clock_t start, end;
+    double cpu_timeFim_used;
+    int Comparacoes = 0;
 
+    // Inicia a contagem do tempo
+    start = clock();
+
+    Pokemon* pokemons = lerTodoArquivo(FILE_PATH);
+    
     if (!pokemons) {
+        printf("Pokemons nao inicializados\n");
         return 1;
     }
 
-    Pokemon PokemonsPedidos[TAMANHO];
-    
-    while (scanf("%s", entrada) && isFim(entrada) == false) {
-        sscanf(entrada, "%d", &id);
+    // Ordenação usando QuickSort
+    Pokemon *pokemonPtrs[TAMANHO];
+    for (int i = 0; i < TAMANHO; i++) {
+        pokemonPtrs[i] = &pokemons[i];
+    }
+    OrdenarPokemonsQuickSort(pokemonPtrs, 0, TAMANHO - 1);
 
-        Pokemon PokemonEncontrado = procurar(pokemons, id);
-        
-        if (PokemonEncontrado.id != -1) {
-            PokemonsPedidos[i++] = PokemonEncontrado;
+    char entrada[20];
+    int ids[100];
+    int i = 0;
+    
+    while (scanf("%s", entrada) && !isFim(entrada)) {
+        sscanf(entrada, "%d", &ids[i++]);
+    }
+
+    char nomes[100][MAX]; 
+    i = 0;
+    
+    while (scanf("%s", entrada) && !isFim(entrada)) {
+        strcpy(nomes[i++], entrada);
+    }
+
+    for(int j = 0; j < i; j++) {
+        bool encontrado = false;
+        Pokemon *PokemonEncontrado = procuraBinaria(pokemonPtrs, ids[j], &Comparacoes); //Procura binaria
+
+        if (PokemonEncontrado != NULL) {
+            for (int k = 0; k < i; k++) {
+                if (strcmp(PokemonEncontrado->name, nomes[k]) == 0) {  // Comparação correta de strings
+                    encontrado = true;
+                    Comparacoes++;
+                }
+            }
         }
+
+        if(encontrado) 
+            printf("SIM\n");
+        else           
+            printf("NAO\n");
     }
 
-    for (int j = 0; j < i; j++) {
-        printar(PokemonsPedidos[j]);
-    }
-    
+    // Finaliza a contagem do tempo
+    end = clock();
+    cpu_timeFim_used = ((double)(end - start));
+
+    GravarArquivoDeExecucao("857859_quicksort.txt", cpu_timeFim_used, Comparacoes);
+
     free(pokemons);
+
     return 0;
 }
