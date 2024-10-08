@@ -3,13 +3,6 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Pokemon_2",
-      "request": "launch",
-      "mainClass": "Pokemon_2",
-      "projectName": "tp02_48af6719"
-    },
-    {
-      "type": "java",
       "name": "Pokemon",
       "request": "launch",
       "mainClass": "Pokemon",
@@ -22,8 +15,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/TPS_Exercicios/tp02/TP02Q02 - Registro em C",
-      "program": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/TPS_Exercicios/tp02/TP02Q02 - Registro em C/build/Debug/outDebug",
+      "cwd": ".",
+      "program": "build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

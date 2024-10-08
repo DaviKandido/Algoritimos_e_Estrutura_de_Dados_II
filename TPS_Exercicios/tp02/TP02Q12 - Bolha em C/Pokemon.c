@@ -280,81 +280,55 @@ void GravarArquivoDeExecucao(const char *Filename, int Comparacoes, int moviment
         fclose(arquivo);
     }
 }
-
-void swap(Pokemon **pokemon, int i, int j) {
+void swap(Pokemon **pokemon, int i, int j){
     Pokemon *tmp = pokemon[i];
     pokemon[i] = pokemon[j];
     pokemon[j] = tmp;
 }
 
-void OrdenarPokemonsQuickSort(Pokemon **pokemon, int esq, int dir, int *Comparacoes, int *Movimentacoes) {
-    if (esq >= dir) return; // Caso base para evitar chamadas desnecessárias
 
-    int i = esq, j = dir;
-    Pokemon *pivo = pokemon[(esq + dir) / 2];
-
-    while (i <= j && pivo != NULL) {
-        // Comparação com o pivô
-
-        if (pokemon[i]->generation == pivo->generation) {
-
-            while (strcpy(pokemon[i]->name, pivo->name) < 0){
-                (*Comparacoes)++;
-                i++;
-            }
-                
-            while(strcpy(pokemon[j]->name, pivo->name) > 0){
-                (*Comparacoes)++;
-                j--;
-            }
-        }else{
-            while (pokemon[i]->generation < pivo->generation) {
-                (*Comparacoes)++;
-                i++;
-            }
-            while (pokemon[j]->generation > pivo->generation)  {
-                    (*Comparacoes)++;
-                    j--;
+void ordenarBolha(Pokemon **pokemon, int n, int *Comparacoes, int *movimentacoes) {
+    
+    bool houveTroca = true;
+    int i; int j;
+    for(i = 0; i < (n-1) && houveTroca; i++){
+        houveTroca = false;
+        for(j = 0; j < (n-i-1); j++){
+            (*Comparacoes)++;
+            if(pokemon[j]->id > pokemon[j+1]->id){
+                (*movimentacoes)+=3;
+                swap(pokemon, j, j+1);
+                houveTroca = true;
             }
         }
-
-        // Troca apenas se os índices forem válidos
-        if (i <= j) {
-            (*Movimentacoes) += 3; 
-            swap(pokemon, i, j);
-            i++;
-            j--;
-        }
-
-        
     }
-
-    // Chamadas recursivas
-    if (esq < j)
-        OrdenarPokemonsQuickSort(pokemon, esq, j, Comparacoes, Movimentacoes);
-    if (i < dir)
-        OrdenarPokemonsQuickSort(pokemon, i, dir, Comparacoes, Movimentacoes);
 }
 
+
 int main(void) {
+
     clock_t start, end;
     double timeTotal;
     int Comparacoes = 0;
     int movimentacoes = 0;
 
+
     Pokemon* pokemons = lerTodoArquivo(FILE_PATH);
     
     if (!pokemons) {
         printf("Pokemons nao inicializados\n");
+        return 1;
     }
 
     Pokemon *pokemonBuscados[200];
+
     char entrada[30];
     int id;
     int i = 0;
-
+    
     while (scanf("%s", entrada) && !isFim(entrada)) {
         sscanf(entrada, "%d", &id);
+
         Pokemon *pokemonEncontrado = procurar(pokemons, id);
 
         if (pokemonEncontrado != NULL) {
@@ -362,19 +336,23 @@ int main(void) {
         }
     }
 
+
     start = clock();
-     OrdenarPokemonsQuickSort(pokemonBuscados, 0, i - 1, &Comparacoes, &movimentacoes); // 
+    ordenarBolha(pokemonBuscados, i, &Comparacoes, &movimentacoes);
     end = clock();
 
     for (int j = 0; j < i; j++) {
         printarPokemon(pokemonBuscados[j]);
     }
 
+
+
     // Finaliza a contagem do tempo
     timeTotal = ((double)(end - start));
 
-    GravarArquivoDeExecucao("857859_quicksort.txt", Comparacoes, movimentacoes, timeTotal);
-    
+    GravarArquivoDeExecucao("857859_bolha.txt", Comparacoes, movimentacoes, timeTotal);
+
     free(pokemons);
+
     return 0;
 }

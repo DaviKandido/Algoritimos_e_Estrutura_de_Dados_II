@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Scanner;
 
-public class Pokemon {
+public class PokemonClass {
 
     // static SimpleDateFormat ddf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 

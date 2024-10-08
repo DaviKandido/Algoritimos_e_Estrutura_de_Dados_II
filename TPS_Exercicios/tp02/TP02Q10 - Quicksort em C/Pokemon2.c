@@ -291,42 +291,27 @@ void OrdenarPokemonsQuickSort(Pokemon **pokemon, int esq, int dir, int *Comparac
     if (esq >= dir) return; // Caso base para evitar chamadas desnecessárias
 
     int i = esq, j = dir;
-    Pokemon *pivo = pokemon[(esq + dir) / 2];
+    int pivo = pokemon[(esq + dir) / 2]->generation;
 
-    while (i <= j && pivo != NULL) {
+    while (i <= j) {
         // Comparação com o pivô
-
-        if (pokemon[i]->generation == pivo->generation) {
-
-            while (strcpy(pokemon[i]->name, pivo->name) < 0){
-                (*Comparacoes)++;
-                i++;
-            }
-                
-            while(strcpy(pokemon[j]->name, pivo->name) > 0){
-                (*Comparacoes)++;
-                j--;
-            }
-        }else{
-            while (pokemon[i]->generation < pivo->generation) {
-                (*Comparacoes)++;
-                i++;
-            }
-            while (pokemon[j]->generation > pivo->generation)  {
-                    (*Comparacoes)++;
-                    j--;
-            }
+        while (pokemon[i] != NULL && (pokemon[i]->generation < pivo || pokemon[i]->generation == pivo && strcmp(pokemon[i]->name, pokemon[(esq + dir) / 2]->name) < 0)) {
+            (*Comparacoes)++;
+            i++;
         }
+        while (pokemon[j] != NULL && (pokemon[j]->generation > pivo || pokemon[j]->generation == pivo && strcmp(pokemon[j]->name, pokemon[(esq + dir) / 2]->name) > 0)) {
+            (*Comparacoes)++;
+            j--;
+        }
+
 
         // Troca apenas se os índices forem válidos
         if (i <= j) {
-            (*Movimentacoes) += 3; 
+            (*Movimentacoes) += 3;
             swap(pokemon, i, j);
             i++;
             j--;
         }
-
-        
     }
 
     // Chamadas recursivas
@@ -346,6 +331,7 @@ int main(void) {
     
     if (!pokemons) {
         printf("Pokemons nao inicializados\n");
+        return 1;
     }
 
     Pokemon *pokemonBuscados[200];
@@ -363,7 +349,37 @@ int main(void) {
     }
 
     start = clock();
-     OrdenarPokemonsQuickSort(pokemonBuscados, 0, i - 1, &Comparacoes, &movimentacoes); // 
+
+    int m = i;
+    int j = 0;
+    i = 0;
+
+    for(i = 0; i < m; i++) {
+
+        for(j = i + 1; j < m; j++) {
+
+            Comparacoes++;
+
+            if(strcmp(character_getHouse(&mainCharacters[i]), character_getHouse(&mainCharacters[j])) > 0) {
+
+                Character temp = mainCharacters[i];
+                mainCharacters[i] = mainCharacters[j];
+                mainCharacters[j] = temp;
+            }
+            else if(strcmp(character_getHouse(&mainCharacters[i]), character_getHouse(&mainCharacters[j])) == 0) {
+
+                Comparacoes++;
+
+                if(strcmp(character_getName(&mainCharacters[i]), character_getName(&mainCharacters[j])) > 0) {
+
+                    Character temp = mainCharacters[i];
+                    mainCharacters[i] = mainCharacters[j];
+                    mainCharacters[j] = temp;
+                }
+            }
+        }
+    }
+
     end = clock();
 
     for (int j = 0; j < i; j++) {
@@ -373,7 +389,7 @@ int main(void) {
     // Finaliza a contagem do tempo
     timeTotal = ((double)(end - start));
 
-    GravarArquivoDeExecucao("857859_quicksort.txt", Comparacoes, movimentacoes, timeTotal);
+    GravarArquivoDeExecucao("857859_shellsort.txt", Comparacoes, movimentacoes, timeTotal);
     
     free(pokemons);
     return 0;

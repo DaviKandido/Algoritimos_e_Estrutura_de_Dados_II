@@ -56,10 +56,8 @@
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
-  "java.debug.settings.onBuildFailureProceed": true,
   "java.project.sourcePaths": [
-    "fonte",
-    "TP02Q01 - Classe em Java",
-    "TP02Q02 - Registro em C"
+    "TP02Q03 - Pesquisa Sequencial em Java",
+    "TP02Q11 - Counting Sort em Java"
   ]
 }

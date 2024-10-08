@@ -20,7 +20,7 @@
  import java.io.File;
  import java.io.RandomAccessFile;
  
- public class Pokemon {
+ public class PokemonHeap{
  
      // static SimpleDateFormat ddf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
  
@@ -106,7 +106,7 @@
  
      //---------------------------------- Clone -------------------------------------------//
  
-     public Pokemon Clone() { return new Pokemon( this.id, this.generation, this.name, this.description, this.types, this.abilities, this.weight, this.height, this.captureRate, this.isLegendary, this.captureDate); }
+     public Pokemon PokemonClone() { return new Pokemon( this.id, this.generation, this.name, this.description, this.types, this.abilities, this.weight, this.height, this.captureRate, this.isLegendary, this.captureDate); }
  
      //---------------------------------- Imprimir -------------------------------------------//
  
@@ -139,10 +139,10 @@
          return (entrada.length() == 3 && entrada.charAt(0) == 'F' && entrada.charAt(1) == 'I' && entrada.charAt(2) == 'M');
      }
  
-         //---------------------------------- Função cria pokemon usando split -------------------------------------------//
+         //---------------------------------- Função cria Pokemonusando split -------------------------------------------//
  
          public static Pokemon criarPokemon(String linha) {
-             Pokemon pokemon = new Pokemon();
+             Pokemon pokemon= new Pokemon();
              SimpleDateFormat ddf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
      
              // Divide a linha em partes usando split
@@ -188,7 +188,7 @@
          }
          
  
-     //---------------------------------- Ler Pokemon -------------------------------------------//
+     //---------------------------------- Ler Pokemon-------------------------------------------//
  
      public static Pokemon[] lerPokemon(Pokemon pokemon[]) {
  
@@ -225,17 +225,31 @@
                 return pokemon[i];
             }
         }
-
         // Retorna null se o Pokémon com o ID especificado não for encontrado
+        return null;
+    }
+
+
+    public static Pokemon ProcuraPokemon(Pokemon pokemon[], String name) {
+ 
+        int i = 0;
+
+        for(i = 0; i < 801; i++){
+            if(pokemon[i].getName().intern() == name.intern()){
+                return pokemon[i];
+            }
+        }
+
+        // Retorna null se o Pokémon com o nome especificado não for encontrado
         return null;
     }
     
     //Grava arquivo com paramentros de Execução
-    public static void GravarArquivoDeExecucao(String filename,long FimTime, int Comparacoes ){
+    public static void GravarArquivoDeExecucao(String filename, int Comparacoes, int movimentacoes, long FimTime ){
 
         try(RandomAccessFile arquivo = new RandomAccessFile(filename, "rw")){
             
-            arquivo.writeChars("Matricula: 857859 \t Tempo de Execução: " + FimTime +"ms \t Comparações: " + Comparacoes);
+            arquivo.writeChars("857859\t"+ Comparacoes + "\t" + movimentacoes + "\t" + FimTime +"ms");
 
             arquivo.close();
 
@@ -243,16 +257,92 @@
             System.err.println("Erro no arquivo criado" + err.getMessage());
         }
     }
+
+
+    //--------------------Metodos heapSort------------------------------//
+    public static void swap(Pokemon pokemon[], int i, int j) {
+        Pokemon tmp = pokemon[i];
+        pokemon[i] = pokemon[j];
+        pokemon[j] = tmp; 
+    }
+    
+    public static void construir(Pokemon pokemon[], int tam) {
+        for (int i = tam; i > 1 && (pokemon[i] != null) && pokemon[i].getHeight() > pokemon[i/2].getHeight(); i /= 2) {
+            swap(pokemon, i, i / 2);
+        }
+    }
+    
+    public static int getMaiorFilho(Pokemon pokemon[], int i, int tam) {
+        int filho;
+        if (2 * i == tam) {
+            filho = 2 * i;
+        } else if (pokemon[2 * i].getHeight() > pokemon[2 * i + 1].getHeight()) {
+            filho = 2 * i;
+        } else if (pokemon[2 * i].getHeight() < pokemon[2 * i + 1].getHeight()) {
+            filho = 2 * i + 1;
+        } else {
+            if (pokemon[2 * i].getName().compareTo(pokemon[2 * i + 1].getName()) > 0) {
+                filho = 2 * i;
+            } else {
+                filho = 2 * i + 1;
+            }
+        }
+        return filho;
+    }
+    
+    public static boolean hasFilho(int i, int tam) {
+        return (i <= (tam / 2));
+    }
+    
+    public static void reconstruir(Pokemon pokemon[], int tam) {
+        int i = 1;
+        while (hasFilho(i, tam) == true) {
+            int filho = getMaiorFilho(pokemon, i, tam);
+            if ((pokemon[i] != null) && pokemon[i].getHeight() < pokemon[filho].getHeight()) {
+                swap(pokemon, i, filho);
+                i = filho;
+            } else if ( (pokemon[i] != null) && pokemon[i].getHeight() == pokemon[filho].getHeight()) {
+                if (pokemon[i].getName().compareTo(pokemon[filho].getName()) < 0) {
+                    swap(pokemon, i, filho);
+                    i = filho;
+                } else {
+                    i = tam; // Sai do loop
+                }
+            } else {
+                i = tam; // Sai do loop
+            }
+        }
+    }
+    
+    public static int[] heapSort(Pokemon pokemon[], int n) {
+        int dados[] = new int[2];
+        dados[0]++;
+        dados[1]++;
+        // Construção do heap
+        for (int tam = 2; tam <= n; tam++) {
+            construir(pokemon, tam);
+        }
+    
+        // Ordenação propriamente dita
+        int tam = n;
+        while (tam > 1) {
+            swap(pokemon, 1, tam--);
+            reconstruir(pokemon, tam);
+        }
+    
+        return dados;
+    }
+
+        //--------------------END - Metodos heapSort------------------------------//
+
  
      public static void main(String[] args) {
 
-        long start = System.currentTimeMillis(); //Variáveis de analise de Execução
-        int Comparacoes = 0;
- 
+         
          Scanner sc = new Scanner(System.in);
          boolean parar = true;
-         int i = 0;
-     
+         int i = 1;
+         
          Pokemon pokemon[] = new Pokemon[801];
          pokemon = lerPokemon(pokemon);
          
@@ -261,54 +351,37 @@
          // Ler até encontrar "FIM"
          while (parar) {
              String entrada = sc.nextLine();
-     
+             
              if (isFim(entrada)) {
                  parar = false;
-             } else {
-                
-                int id = Integer.parseInt(entrada);
-
-                pokemonsBuscados[i++] = ProcuraPokemon(pokemon, id);
-                
-                
-            }
-        }
-        Comparacoes += 801^2;
-
-        parar = true; //Reiniciar variáveis de controle
-         i = 0;
-         String names[] = new String[400];
-        // Ler até encontrar "FIM"
-         while (parar) {
-             String entrada = sc.nextLine();
-     
-             if (isFim(entrada)) {
-                 parar = false;
-             } else {
-                
-                names[i++] = entrada;
-             }
-         }
-
-
-         for(int j = 0; j < i; j++){
-            boolean encontrado = false;
-            for(int k = 0; k < i; k++){
-                Comparacoes ++;
-                if(pokemonsBuscados[j].getName().intern() == names[k].intern()){
-                    encontrado = true;
+                } else {
+                    
+                    int id = Integer.parseInt(entrada);
+                    
+                    Pokemon pokemonEncontrado = ProcuraPokemon(pokemon, id);
+                    if (pokemonEncontrado != null) {
+                        pokemonsBuscados[i++] = pokemonEncontrado;
+                    }
+                    
                 }
             }
-            if(encontrado) System.out.println("SIM");
-            else           System.out.println("NAO");
-         }
-         
+
+            
+        long start = System.currentTimeMillis(); //Variáveis de analise de Execução
+
+        int dados[] = heapSort(pokemonsBuscados, i);
+
+        long FimTime = System.currentTimeMillis() - start;
+
+        for(int j = 1; (pokemonsBuscados[j] != null) && j <= i; j++){
+            pokemonsBuscados[j].printPokemon();
+        }
+            
          sc.close();
 
-         long FimTime = System.currentTimeMillis() - start;
      
 
-         GravarArquivoDeExecucao("857859_Sequencial.txt", FimTime, Comparacoes); //Arquivo de analise de Execução
+         GravarArquivoDeExecucao("857859_heapsort.txt", dados[0], dados[1], FimTime); //Arquivo de analise de Execução
 
 
         }

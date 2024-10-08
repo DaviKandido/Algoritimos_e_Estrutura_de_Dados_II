@@ -38,22 +38,22 @@ bool isFim(char* entrada){
     return (strlen(entrada) == 3 && entrada[0] == 'F' && entrada[1] && entrada[2]);
 }
 
-// Função para procurar um Pokémon com o di ID
-// Pokemon* procurar(Pokemon* pokemons, int id) {
+//Função para procurar um Pokémon com o di ID
+Pokemon* procurar(Pokemon* pokemons, int id) {
     
-//     Pokemon *pokemon;
+    Pokemon *pokemon;
     
-//     for (int i = 0; i < TAMANHO; i++) {
-//         if (pokemons[i].id == id) {
-//             pokemon = &pokemons[i];
-//         }
-//     }
+    for (int i = 0; i < TAMANHO; i++) {
+        if (pokemons[i].id == id) {
+            pokemon = &pokemons[i];
+        }
+    }
     
-//     return pokemon; 
-// }
+    return pokemon; 
+}
 
 
-Pokemon *procuraBinaria(Pokemon** pokemons, int id, int *conparacoes) {
+Pokemon *procuraBinaria_id(Pokemon** pokemons, int id, int *conparacoes) {
     
     bool resp = false;
     int dir = 801-1, esq = 0, meio;
@@ -72,6 +72,31 @@ Pokemon *procuraBinaria(Pokemon** pokemons, int id, int *conparacoes) {
     } 
 
     if(resp) return pokemons[meio];
+}
+
+
+Pokemon *procuraBinaria_name(Pokemon** pokemons, char* name, int *comparacoes) {
+    
+    int dir = 801 - 1, esq = 0, meio;
+
+    while (esq <= dir) {
+        meio = (esq + dir) / 2;
+
+        int cmp = strcmp(name, pokemons[meio]->name);
+        (*comparacoes)++;
+
+        if (cmp == 0) {
+            return pokemons[meio];
+        } else if (cmp > 0) {
+
+            esq = meio + 1;
+        } else {
+
+            dir = meio - 1;
+        }
+    }
+
+    return NULL;
 }
 
 void removerOcorrencias(char *str, char caractere) {
@@ -242,7 +267,7 @@ void printarPokemon(Pokemon *pokemon) {
            pokemon->captureDate.mes, 
            pokemon->captureDate.ano);
 }
-void GravarArquivoDeExecucao(const char *Filename, double cpu_timeFim_used, int Comparacoes) {
+void GravarArquivoDeExecucao(const char *Filename, int Comparacoes, int movimentacoes, long timeTotal) {
 
     FILE *arquivo = fopen(Filename, "w+");
 
@@ -250,47 +275,52 @@ void GravarArquivoDeExecucao(const char *Filename, double cpu_timeFim_used, int 
         printf("ERRO ao gerar o arquivo\n");
     } else {
 
-        fprintf(arquivo, "Matricula: 857859 \t Tempo de Execução: %lf ms \t Comparações: %d\n", cpu_timeFim_used, Comparacoes);
+        fprintf(arquivo, "857859\t%d\t%d\t%ldms", Comparacoes, movimentacoes, timeTotal);
         
         fclose(arquivo);
     }
 }
-void swap(Pokemon **pokemon, int i, int j){
-    Pokemon *tmp = pokemon[i];
-    pokemon[i] = pokemon[j];
-    pokemon[j] = tmp;
-}
 
-void OrdenarPokemonsQuickSort(Pokemon **pokemon, int esq, int dir) {
-    int i = esq, j = dir;
-    int pivo = pokemon[(esq + dir) / 2]->id;
 
-    while (i <= j) {
-        while (pokemon[i]->id < pivo) {
-            i++;
+void insercaoPorCor(Pokemon **pokemon, int n, int cor, int h, int *Comparacoes, int *movimentacoes) {
+    
+    for(int i = (h+cor); i < n; i+=h){
+        Pokemon *tmp = pokemon[i];
+        int j = i -h;
+
+        (*Comparacoes)+=2;
+        while( (j >= 0) && ((pokemon[j]->weight > tmp->weight) || ((pokemon[j]->weight == tmp->weight) && (strcmp(pokemon[j]->name, tmp->name) > 0 )))){
+
+            (*movimentacoes)++;
+            pokemon[j+h] = pokemon[j];
+            j-=h;
         }
-        while (pokemon[j]->id > pivo) {
-            j--;
-        }
-        if (i <= j) {
-            swap(pokemon, i, j);
-            i++;
-            j--;
-        }
+
+        (*movimentacoes)++;
+        pokemon[j+h] = tmp;
     }
-    if (esq < j)
-        OrdenarPokemonsQuickSort(pokemon, esq, j);
-    if (i < dir)
-        OrdenarPokemonsQuickSort(pokemon, i, dir);
 }
+
+void ordenarShellSort(Pokemon **pokemon, int n, int *comparacoes, int *movimentacoes) {
+    int h = 1;
+    do{ h = (h*3) + 1; } while (h<n);
+    do{
+        h /=3;
+        for(int cor = 0; cor < h; cor++){
+            insercaoPorCor(pokemon, n, cor, h, comparacoes, movimentacoes);
+        }
+    }while(h != 1);
+}
+
+
 
 int main(void) {
-    clock_t start, end;
-    double cpu_timeFim_used;
-    int Comparacoes = 0;
 
-    // Inicia a contagem do tempo
-    start = clock();
+    clock_t start, end;
+    double timeTotal;
+    int Comparacoes = 0;
+    int movimentacoes = 0;
+
 
     Pokemon* pokemons = lerTodoArquivo(FILE_PATH);
     
@@ -299,52 +329,36 @@ int main(void) {
         return 1;
     }
 
-    // Ordenação usando QuickSort
-    Pokemon *pokemonPtrs[TAMANHO];
-    for (int i = 0; i < TAMANHO; i++) {
-        pokemonPtrs[i] = &pokemons[i];
-    }
-    OrdenarPokemonsQuickSort(pokemonPtrs, 0, TAMANHO - 1);
+    Pokemon *pokemonBuscados[200];
 
-    char entrada[20];
-    int ids[100];
+    char entrada[30];
+    int id;
     int i = 0;
     
     while (scanf("%s", entrada) && !isFim(entrada)) {
-        sscanf(entrada, "%d", &ids[i++]);
+        sscanf(entrada, "%d", &id);
+
+        pokemonBuscados[i++] = procurar(pokemons, id); 
     }
 
-    char nomes[100][MAX]; 
-    i = 0;
+
+    start = clock();
+    ordenarShellSort(pokemonBuscados, i, &Comparacoes, &movimentacoes);
+    end = clock();
+
+
+
+    for (int j = 0; j < i; j++) {
+        printarPokemon(pokemonBuscados[j]);
+    }
+
     
-    while (scanf("%s", entrada) && !isFim(entrada)) {
-        strcpy(nomes[i++], entrada);
-    }
-
-    for(int j = 0; j < i; j++) {
-        bool encontrado = false;
-        Pokemon *PokemonEncontrado = procuraBinaria(pokemonPtrs, ids[j], &Comparacoes); //Procura binaria
-
-        if (PokemonEncontrado != NULL) {
-            for (int k = 0; k < i; k++) {
-                if (strcmp(PokemonEncontrado->name, nomes[k]) == 0) {  // Comparação correta de strings
-                    encontrado = true;
-                    Comparacoes++;
-                }
-            }
-        }
-
-        if(encontrado) 
-            printf("SIM\n");
-        else           
-            printf("NAO\n");
-    }
+ 
 
     // Finaliza a contagem do tempo
-    end = clock();
-    cpu_timeFim_used = ((double)(end - start));
+    timeTotal = ((double)(end - start));
 
-    GravarArquivoDeExecucao("857859_quicksort.txt", cpu_timeFim_used, Comparacoes);
+    GravarArquivoDeExecucao("857859_shellsort.txt", Comparacoes, movimentacoes, timeTotal);
 
     free(pokemons);
 
