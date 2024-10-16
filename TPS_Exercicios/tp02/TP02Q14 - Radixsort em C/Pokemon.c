@@ -8,8 +8,11 @@
 #define MAX 100 
 #define TAMANHO 801
 
+    int comparacoes = 0;
+    int movimentacoes = 0;
+
 #define FILE_PATH "/tmp/pokemon.csv"
-// #define FILE_PATH "pokemon.csv"
+//#define FILE_PATH "pokemon.csv"
 
 // Estrutura de data
 typedef struct {
@@ -281,51 +284,126 @@ void GravarArquivoDeExecucao(const char *Filename, int Comparacoes, int moviment
     }
 }
 
-void swap(Pokemon **pokemon, int i, int j) {
-    Pokemon *tmp = pokemon[i];
-    pokemon[i] = pokemon[j];
-    pokemon[j] = tmp;
-}
-
-void OrdenarPokemonsQuickSort(Pokemon **pokemon, int esq, int dir, int *Comparacoes, int *Movimentacoes) {
-    if (esq >= dir) return; // Caso base para evitar chamadas desnecessárias
-
-    int i = esq, j = dir;
-    Pokemon *pivo = pokemon[(esq + dir) / 2];
-
-    while (i <= j) {
-        // Comparação com o pivô
-        while ((pokemon[i]->generation < pivo->generation || (pokemon[i]->generation == pivo->generation && strcmp(pokemon[i]->name, pivo->name) < 0))) {
-            (*Comparacoes)++;
-            i++;
-        }
-        while ( (pokemon[j]->generation > pivo->generation || (pokemon[j]->generation == pivo->generation && strcmp(pokemon[j]->name, pivo->name) > 0))) {
-            (*Comparacoes)++;
-            j--;
-        }
 
 
-        // Troca apenas se os índices forem válidos
-        if (i <= j) {
-            (*Movimentacoes) += 3;
-            swap(pokemon, i, j);
-            i++;
-            j--;
+
+
+int findMaxStringLength_forName(Pokemon **pokemon, int n) {
+    int maxLen = strlen(pokemon[0]->name);
+    for (int i = 1; i < n; i++) {
+        if (strlen(pokemon[i]->name) > maxLen) {
+            maxLen = strlen(pokemon[i]->name);
         }
     }
-
-    // Chamadas recursivas
-    if (esq < j)
-        OrdenarPokemonsQuickSort(pokemon, esq, j, Comparacoes, Movimentacoes);
-    if (i < dir)
-        OrdenarPokemonsQuickSort(pokemon, i, dir, Comparacoes, Movimentacoes);
+    return maxLen;
 }
 
+
+
+// Função de Counting Sort para cada posição do caractere
+void countingSortByCharacter_forName(Pokemon **pokemon, int n, int pos) {
+    Pokemon *output[n];
+    int count[257] = {0};  // Contagem de 256 caracteres ASCII + 1 para strings curtas (nulo)
+
+    // Conta a frequência de cada caractere na posição 'pos'
+    for (int i = 0; i < n; i++) {
+        comparacoes++;
+        char ch = (pos < strlen(pokemon[i]->name)) ? pokemon[i]->name[pos] : 0;  // Se for menor que o comprimento da string, pega o caractere, senão pega 0
+        count[(int)ch + 1]++;  // Usamos `ch + 1` para tratar o caractere nulo (0)
+    }
+
+    // Acumula as frequências
+    for (int i = 1; i < 257; i++) {
+        count[i] += count[i - 1];
+    }
+
+    // Coloca os itens no array de saída
+    for (int i = n - 1; i >= 0; i--) {
+        comparacoes++;
+        char ch = (pos < strlen(pokemon[i]->name)) ? pokemon[i]->name[pos] : 0;
+        movimentacoes++;
+        output[count[(int)ch + 1] - 1] = pokemon[i];
+        count[(int)ch + 1]--;
+    }
+
+    // Copia o array de saída de volta para o array original
+    for (int i = 0; i < n; i++) {
+        movimentacoes++;
+        pokemon[i] = output[i];
+    }
+}
+
+
+int findMaxStringLength_forAbilities(Pokemon **pokemon, int n) {
+    int maxLen = strlen(pokemon[0]->abilities[0]);
+    for (int i = 1; i < n; i++) {
+        if (strlen(pokemon[i]->abilities[0]) > maxLen) {
+            maxLen = strlen(pokemon[i]->abilities[0]);
+        }
+    }
+    return maxLen;
+}
+
+
+// Função de Counting Sort para cada posição do caractere
+void countingSortByCharacter_forAbilities(Pokemon **pokemon, int n, int pos) {
+    Pokemon *output[n];
+    int count[257] = {0};  // Contagem de 256 caracteres ASCII + 1 para strings curtas (nulo)
+
+    // Conta a frequência de cada caractere na posição 'pos'
+    for (int i = 0; i < n; i++) {
+        comparacoes++;
+        char ch = (pos < strlen(pokemon[i]->abilities[0])) ? pokemon[i]->abilities[0][pos] : 0;  // Se for menor que o comprimento da string, pega o caractere, senão pega 0
+        count[(int)ch + 1]++;  // Usamos `ch + 1` para tratar o caractere nulo (0)
+    }
+
+    // Acumula as frequências
+    for (int i = 1; i < 257; i++) {
+        count[i] += count[i - 1];
+    }
+
+    // Coloca os itens no array de saída
+    for (int i = n - 1; i >= 0; i--) {
+        comparacoes++;
+        char ch = (pos < strlen(pokemon[i]->abilities[0])) ? pokemon[i]->abilities[0][pos] : 0;
+        movimentacoes++;
+        output[count[(int)ch + 1] - 1] = pokemon[i];
+        count[(int)ch + 1]--;
+    }
+
+    // Copia o array de saída de volta para o array original
+    for (int i = 0; i < n; i++) {
+        movimentacoes++;
+        pokemon[i] = output[i];
+    }
+}
+
+// Função Radix Sort para strings
+void radixSort(Pokemon **pokemon, int n) {
+
+        // Encontra o comprimento da maior string
+    int maxLen = findMaxStringLength_forName(pokemon, n);
+
+
+    // Ordena por cada posição de caractere, da última para a primeira
+    for (int pos = maxLen - 1; pos >= 0; pos--) {
+        countingSortByCharacter_forName(pokemon, n, pos);
+    }
+
+    maxLen = findMaxStringLength_forAbilities(pokemon, n);
+
+    // Ordena por cada posição de caractere, da última para a primeira
+    for (int pos = maxLen - 1; pos >= 0; pos--) {
+        countingSortByCharacter_forAbilities(pokemon, n, pos);
+    }
+}
+
+
 int main(void) {
+
     clock_t start, end;
     double timeTotal;
-    int Comparacoes = 0;
-    int movimentacoes = 0;
+
 
     Pokemon* pokemons = lerTodoArquivo(FILE_PATH);
     
@@ -335,12 +413,14 @@ int main(void) {
     }
 
     Pokemon *pokemonBuscados[200];
+
     char entrada[30];
     int id;
     int i = 0;
-
+    
     while (scanf("%s", entrada) && !isFim(entrada)) {
         sscanf(entrada, "%d", &id);
+
         Pokemon *pokemonEncontrado = procurar(pokemons, id);
 
         if (pokemonEncontrado != NULL) {
@@ -348,19 +428,23 @@ int main(void) {
         }
     }
 
+
     start = clock();
-    OrdenarPokemonsQuickSort(pokemonBuscados, 0, i - 1, &Comparacoes, &movimentacoes); // 
+        radixSort(pokemonBuscados, i);
     end = clock();
 
     for (int j = 0; j < i; j++) {
         printarPokemon(pokemonBuscados[j]);
     }
 
+
+
     // Finaliza a contagem do tempo
     timeTotal = ((double)(end - start));
 
-    GravarArquivoDeExecucao("857859_quicksort.txt", Comparacoes, movimentacoes, timeTotal);
-    
+    GravarArquivoDeExecucao("857859_radixsort.txt", comparacoes, movimentacoes, timeTotal);
+
     free(pokemons);
+
     return 0;
 }

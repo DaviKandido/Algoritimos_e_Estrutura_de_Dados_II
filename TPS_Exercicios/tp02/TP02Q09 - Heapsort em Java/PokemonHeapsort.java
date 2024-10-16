@@ -20,7 +20,7 @@
  import java.io.File;
  import java.io.RandomAccessFile;
  
- public class Pokemon{
+ public class PokemonHeapsort{
  
      // static SimpleDateFormat ddf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
  
@@ -174,7 +174,7 @@
                                      
              pokemon.setWeight(campos[7].isEmpty() ? 0.0 : Double.parseDouble(campos[7])); 
              pokemon.setHeight(campos[8].isEmpty() ? 0.0 : Double.parseDouble(campos[8]));         
-             pokemon.setCaptureRate(campos[9].isEmpty() ? 0 : Integer.parseInt(campos[9])); 
+             pokemon.setCaptureRate(Integer.parseInt(campos[9])); 
              pokemon.setIsLegendary(campos[10].equals("1")); 
      
              // Converte a data para o formato correto
@@ -259,86 +259,81 @@
     }
 
 
-    public static int getMaior(Pokemon pokemon[], int n){
-
-        int maior = 0;
-        for(int i = 0; i < n; i++){
-            if(pokemon[i] == null){
-                System.out.println("Pokemon no indice " + i + " é nulo");
-            }
-
-            if(pokemon[i].captureRate > maior){
-                maior = pokemon[i].captureRate;
-            }
-        }
-
-        return maior;
-    }
-
-    public static void swap(Pokemon pokemon[], int i, int j) {
+    //--------------------Metodos heapSort------------------------------//
+    public static void swap(Pokemon pokemon[], int i, int j, int dados[]) {
         Pokemon tmp = pokemon[i];
         pokemon[i] = pokemon[j];
         pokemon[j] = tmp; 
+        dados[1] +=3;
     }
-
-
-    public static void OrdenarPokemons_PorName(Pokemon pokemon[], int esq, int dir, int dados[]) {
-
-        int i = esq, j = dir;
-        String pivo = pokemon[(esq + dir) / 2].name;
     
-        while (i <= j) {
-            while (pokemon[i].name.compareTo(pivo) < 0) {
-                dados[0]++;
-                i++;
-            }
-            while (pokemon[j].name.compareTo(pivo) > 0) { 
-                dados[0]++;
-                j--;
-            }
-            if (i <= j) {
-                swap(pokemon, i, j);
-                dados[1]+=3;  
+    public static void construir(Pokemon pokemon[], int tam, int dados[]) {
 
-                i++;
-                j--;
+        dados[0]+=2;
+        for (int i = tam; i > 1 && (pokemon[i].getHeight() > pokemon[i/2].getHeight() || (pokemon[i].getHeight() == pokemon[i/2].getHeight() && pokemon[i].getName().compareTo(pokemon[i/2].getName()) > 0)); i /= 2) {
+            swap(pokemon, i, i / 2, dados);
+        }
+    }
+    
+    public static int getMaiorFilho(Pokemon pokemon[], int i, int tam, int dados[]) {
+        int filho;
+        if (2 * i == tam) {
+            filho = 2 * i;
+        } else if (pokemon[2 * i].getHeight() > pokemon[2 * i + 1].getHeight()) {
+            dados[0]++;
+            filho = 2 * i;
+        } else if (pokemon[2 * i].getHeight() < pokemon[2 * i + 1].getHeight()) {
+            dados[0]++;
+            filho = 2 * i + 1;
+        } else {
+            if (pokemon[2 * i].getName().compareTo(pokemon[2 * i + 1].getName()) > 0) {
+                dados[0]++;
+                filho = 2 * i;
+            } else {
+                dados[0]++;
+                filho = 2 * i + 1;
             }
         }
-    
-        // Chama recursivamente o QuickSort para as duas metades
-        if (esq < j)
-            OrdenarPokemons_PorName(pokemon, esq, j, dados);
-        if (i < dir)
-            OrdenarPokemons_PorName(pokemon, i, dir, dados);
+        return filho;
     }
-
-
-    public static void OrdenarPokemons_PorId(Pokemon pokemon[], int esq, int dir) {
-        int i = esq, j = dir;
-        int pivo = pokemon[(esq + dir) / 2].id;
     
-        while (i <= j) {
-            while (pokemon[i].id < pivo) {
-                i++;
-            }
-            while (pokemon[j].id > pivo) { 
-                j--;
-            }
-            if (i <= j) {
-                swap(pokemon, i, j);  
-                
-                i++;
-                j--;
+    public static boolean hasFilho(int i, int tam) {
+        return (i <= (tam / 2));
+    }
+    
+    public static void reconstruir(Pokemon pokemon[], int tam, int dados[]) {
+        int i = 1;
+        while (hasFilho(i, tam) == true){
+            int filho = getMaiorFilho(pokemon, i,tam, dados);
+
+            if(pokemon[i].getHeight() < pokemon[filho].getHeight() || (pokemon[i].getHeight() == pokemon[filho].getHeight() && pokemon[i].getName().compareTo(pokemon[filho].getName())< 0)){
+                dados[0]++;
+                swap(pokemon, i, filho, dados);
+                i = filho;
+            } else{
+                dados[0]+=2;
+                i = tam;
             }
         }
+    }
     
-        // Chama recursivamente o QuickSort para as duas metades
-        if (esq < j)
-            OrdenarPokemons_PorId(pokemon, esq, j);
-        if (i < dir)
-            OrdenarPokemons_PorId(pokemon, i, dir);
+    public static void heapSort(Pokemon pokemon[], int n, int dados[]) {
+
+        // Construção do heap
+        for (int tam = 2; tam <= n; tam++) {
+            construir(pokemon, tam, dados);
+        }
+    
+        // Ordenação propriamente dita
+        int tam = n;
+        while (tam > 1) {
+            swap(pokemon, 1, tam--, dados);
+            reconstruir(pokemon, tam, dados);
+        }
+    
     }
 
+        //--------------------END - Metodos heapSort------------------------------//
 
  
      public static void main(String[] args) {
@@ -346,10 +341,7 @@
          
          Scanner sc = new Scanner(System.in);
          boolean parar = true;
-         int i = 0;
-
-         int comparacoes = 0;
-         int movimentacoes = 0;
+         int i = 1;
          
          Pokemon pokemon[] = new Pokemon[801];
          pokemon = lerPokemon(pokemon);
@@ -369,63 +361,28 @@
                     Pokemon pokemonEncontrado = ProcuraPokemon(pokemon, id);
                     if (pokemonEncontrado != null) {
                         pokemonsBuscados[i++] = pokemonEncontrado;
-                    }else{
-                        System.out.println("Pokemon no indice " + i + " é nulo");
                     }
                     
                 }
             }
 
+        int dados[] = new int[2];
             
         long start = System.currentTimeMillis(); //Variáveis de analise de Execução
 
-        //--------------------Metodos de ordenação por countingsort------------------------------//
-
-
-            int dados[] = new int[2];
-            int n = i;
-
-            //Odena por id(S
-            //OrdenarPokemons_PorId(pokemonsBuscados, 0, n-1);
-
-            //Odena por nome (Deveria ser o correto)
-            OrdenarPokemons_PorName(pokemonsBuscados, 0, n-1, dados);
-
-            //Array para contagem de ocorrencias
-            dados[0] += n;
-            int count[] = new int[getMaior(pokemonsBuscados, n) + 1];
-            Pokemon ordenado[] = new Pokemon[n];
-
-            //Inicializa cada posição do array de contagem
-            for(i = 0; i < count.length; count[i] = 0, i++);
-
-            dados[0] += n;
-            //Agora o count[i] conterá o nº de elementos iguais a i
-            for(i = 0; i < n; count[pokemonsBuscados[i].captureRate]++, i++);
-
-
-            dados[1] += n;
-            //Agora o count[i] conterá o nº de elementos menores ou iguais a i
-            for(i = 1; i < count.length; count[i] += count[i-1] , i++);
-
-            dados[1] += n; dados[0] += n;
-            //Ordenação
-            for(i = n-1; i >= 0; ordenado[count[pokemonsBuscados[i].captureRate]-1] = pokemonsBuscados[i], count[pokemonsBuscados[i].captureRate]--, i--);
-
-
-        //--------------------END - countingsort------------------------------//
+        heapSort(pokemonsBuscados, i-1, dados);
 
         long FimTime = System.currentTimeMillis() - start;
 
-        for(int j = 0; j < n; j++){
-            ordenado[j].printPokemon();
+        for(int j = 1; j < i; j++){
+            pokemonsBuscados[j].printPokemon();
         }
             
          sc.close();
 
      
 
-         GravarArquivoDeExecucao("857859_coutingsort.txt", dados[0], dados[1], FimTime); //Arquivo de analise de Execução
+         GravarArquivoDeExecucao("857859_heapsort.txt", dados[0], dados[1], FimTime); //Arquivo de analise de Execução
 
 
         }

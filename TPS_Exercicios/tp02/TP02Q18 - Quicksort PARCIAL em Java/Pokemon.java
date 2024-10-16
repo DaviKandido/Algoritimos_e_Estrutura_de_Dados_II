@@ -20,7 +20,7 @@
  import java.io.File;
  import java.io.RandomAccessFile;
  
- public class Pokemon{
+ public class Pokemon {
  
      // static SimpleDateFormat ddf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
  
@@ -106,7 +106,7 @@
  
      //---------------------------------- Clone -------------------------------------------//
  
-     public Pokemon PokemonClone() { return new Pokemon( this.id, this.generation, this.name, this.description, this.types, this.abilities, this.weight, this.height, this.captureRate, this.isLegendary, this.captureDate); }
+     public Pokemon Clone() { return new Pokemon( this.id, this.generation, this.name, this.description, this.types, this.abilities, this.weight, this.height, this.captureRate, this.isLegendary, this.captureDate); }
  
      //---------------------------------- Imprimir -------------------------------------------//
  
@@ -139,10 +139,10 @@
          return (entrada.length() == 3 && entrada.charAt(0) == 'F' && entrada.charAt(1) == 'I' && entrada.charAt(2) == 'M');
      }
  
-         //---------------------------------- Função cria Pokemonusando split -------------------------------------------//
+         //---------------------------------- Função cria pokemon usando split -------------------------------------------//
  
          public static Pokemon criarPokemon(String linha) {
-             Pokemon pokemon= new Pokemon();
+             Pokemon pokemon = new Pokemon();
              SimpleDateFormat ddf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
      
              // Divide a linha em partes usando split
@@ -174,7 +174,7 @@
                                      
              pokemon.setWeight(campos[7].isEmpty() ? 0.0 : Double.parseDouble(campos[7])); 
              pokemon.setHeight(campos[8].isEmpty() ? 0.0 : Double.parseDouble(campos[8]));         
-             pokemon.setCaptureRate(campos[9].isEmpty() ? 0 : Integer.parseInt(campos[9])); 
+             pokemon.setCaptureRate(Integer.parseInt(campos[9])); 
              pokemon.setIsLegendary(campos[10].equals("1")); 
      
              // Converte a data para o formato correto
@@ -188,7 +188,7 @@
          }
          
  
-     //---------------------------------- Ler Pokemon-------------------------------------------//
+     //---------------------------------- Ler Pokemon -------------------------------------------//
  
      public static Pokemon[] lerPokemon(Pokemon pokemon[]) {
  
@@ -259,87 +259,46 @@
     }
 
 
-    public static int getMaior(Pokemon pokemon[], int n){
-
-        int maior = 0;
-        for(int i = 0; i < n; i++){
-            if(pokemon[i] == null){
-                System.out.println("Pokemon no indice " + i + " é nulo");
-            }
-
-            if(pokemon[i].captureRate > maior){
-                maior = pokemon[i].captureRate;
-            }
-        }
-
-        return maior;
-    }
-
-    public static void swap(Pokemon pokemon[], int i, int j) {
+    public static int swap(Pokemon pokemon[], int i, int j){
         Pokemon tmp = pokemon[i];
         pokemon[i] = pokemon[j];
         pokemon[j] = tmp; 
+        
+        return 3;
     }
 
 
-    public static void OrdenarPokemons_PorName(Pokemon pokemon[], int esq, int dir, int dados[]) {
+    public static void ordenacaoQuicksortParcial(Pokemon pokemon[], int esq, int dir, int k, int dados[]){
 
-        int i = esq, j = dir;
-        String pivo = pokemon[(esq + dir) / 2].name;
-    
-        while (i <= j) {
-            while (pokemon[i].name.compareTo(pivo) < 0) {
+        int i = esq,
+            j = dir;
+        Pokemon pivo = pokemon[(esq+dir)/2];
+
+
+            while(i<=j){
+
                 dados[0]++;
-                i++;
-            }
-            while (pokemon[j].name.compareTo(pivo) > 0) { 
+                while(pokemon[i].getGeneration() < pivo.getGeneration() 
+                || (pokemon[i].getGeneration() == pivo.getGeneration()  && pokemon[i].getName().compareTo(pivo.getName()) < 0))
+                    i++;
+
                 dados[0]++;
-                j--;
+                while (pokemon[j].getGeneration() > pivo.getGeneration()
+                || (pokemon[j].getGeneration() == pivo.getGeneration()  && pokemon[j].getName().compareTo(pivo.getName()) > 0))
+                    j--;
+                if(i<=j){
+                    dados[1]+=3;
+                    swap(pokemon, i, j);
+                    i++;
+                    j--;
+                }
             }
-            if (i <= j) {
-                swap(pokemon, i, j);
-                dados[1]+=3;  
+            if(esq < j)
+                ordenacaoQuicksortParcial(pokemon, esq, j, k, dados);
+            if(i < k && i < dir)
+                ordenacaoQuicksortParcial(pokemon, i, dir, k, dados);
 
-                i++;
-                j--;
-            }
-        }
-    
-        // Chama recursivamente o QuickSort para as duas metades
-        if (esq < j)
-            OrdenarPokemons_PorName(pokemon, esq, j, dados);
-        if (i < dir)
-            OrdenarPokemons_PorName(pokemon, i, dir, dados);
     }
-
-
-    public static void OrdenarPokemons_PorId(Pokemon pokemon[], int esq, int dir) {
-        int i = esq, j = dir;
-        int pivo = pokemon[(esq + dir) / 2].id;
-    
-        while (i <= j) {
-            while (pokemon[i].id < pivo) {
-                i++;
-            }
-            while (pokemon[j].id > pivo) { 
-                j--;
-            }
-            if (i <= j) {
-                swap(pokemon, i, j);  
-                
-                i++;
-                j--;
-            }
-        }
-    
-        // Chama recursivamente o QuickSort para as duas metades
-        if (esq < j)
-            OrdenarPokemons_PorId(pokemon, esq, j);
-        if (i < dir)
-            OrdenarPokemons_PorId(pokemon, i, dir);
-    }
-
-
  
      public static void main(String[] args) {
 
@@ -347,9 +306,6 @@
          Scanner sc = new Scanner(System.in);
          boolean parar = true;
          int i = 0;
-
-         int comparacoes = 0;
-         int movimentacoes = 0;
          
          Pokemon pokemon[] = new Pokemon[801];
          pokemon = lerPokemon(pokemon);
@@ -366,66 +322,29 @@
                     
                     int id = Integer.parseInt(entrada);
                     
-                    Pokemon pokemonEncontrado = ProcuraPokemon(pokemon, id);
-                    if (pokemonEncontrado != null) {
-                        pokemonsBuscados[i++] = pokemonEncontrado;
-                    }else{
-                        System.out.println("Pokemon no indice " + i + " é nulo");
-                    }
+                    pokemonsBuscados[i++] = ProcuraPokemon(pokemon, id) ;
                     
                 }
             }
 
             
+        int[] dados = new int[2];
+
         long start = System.currentTimeMillis(); //Variáveis de analise de Execução
 
-        //--------------------Metodos de ordenação por countingsort------------------------------//
-
-
-            int dados[] = new int[2];
-            int n = i;
-
-            //Odena por id(S
-            //OrdenarPokemons_PorId(pokemonsBuscados, 0, n-1);
-
-            //Odena por nome (Deveria ser o correto)
-            OrdenarPokemons_PorName(pokemonsBuscados, 0, n-1, dados);
-
-            //Array para contagem de ocorrencias
-            dados[0] += n;
-            int count[] = new int[getMaior(pokemonsBuscados, n) + 1];
-            Pokemon ordenado[] = new Pokemon[n];
-
-            //Inicializa cada posição do array de contagem
-            for(i = 0; i < count.length; count[i] = 0, i++);
-
-            dados[0] += n;
-            //Agora o count[i] conterá o nº de elementos iguais a i
-            for(i = 0; i < n; count[pokemonsBuscados[i].captureRate]++, i++);
-
-
-            dados[1] += n;
-            //Agora o count[i] conterá o nº de elementos menores ou iguais a i
-            for(i = 1; i < count.length; count[i] += count[i-1] , i++);
-
-            dados[1] += n; dados[0] += n;
-            //Ordenação
-            for(i = n-1; i >= 0; ordenado[count[pokemonsBuscados[i].captureRate]-1] = pokemonsBuscados[i], count[pokemonsBuscados[i].captureRate]--, i--);
-
-
-        //--------------------END - countingsort------------------------------//
+        ordenacaoQuicksortParcial(pokemonsBuscados,0 , i-1, 10, dados);
 
         long FimTime = System.currentTimeMillis() - start;
 
-        for(int j = 0; j < n; j++){
-            ordenado[j].printPokemon();
+        for(int j = 0; j < 10; j++){
+            pokemonsBuscados[j].printPokemon();
         }
             
          sc.close();
 
      
 
-         GravarArquivoDeExecucao("857859_coutingsort.txt", dados[0], dados[1], FimTime); //Arquivo de analise de Execução
+         GravarArquivoDeExecucao("857859_quicksortParcial.txt", dados[0], dados[1], FimTime); //Arquivo de analise de Execução
 
 
         }

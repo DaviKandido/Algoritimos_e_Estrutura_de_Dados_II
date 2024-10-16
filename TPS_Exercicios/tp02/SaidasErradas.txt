@@ -1,0 +1,28 @@
+Estão com saídas erradas:
+
+
+tp 13 - Mergesort em Java -> f antes de s no desempate ex:
+
+    [#46 -> Paras: Mushroom Pokémon - ['bug', 'grass'] - ['Effect Spore', 'Dry Skin', 'Damp'] - 5.4kg - 0.3m - 190% - false - 1 gen] - 01/11/1996
+    [#47 -> Parasect: Mushroom Pokémon - ['bug', 'grass'] - ['Effect Spore', 'Dry Skin', 'Damp'] - 29.5kg - 1.0m - 75% - false - 1 gen] - 04/04/1996
+    [#666 -> Vivillon: Scale Pokémon - ['bug', 'flying'] - ['Shield Dust', 'Compoundeyes', 'Friend Guard'] - 17.0kg - 1.2m - 45% - false - 6 gen] - 20/06/2013
+
+//ordem tipo 1 , nome, tipo 2
+
+
+tp 11 - Counting Sort em Java  (Esta usando como criterio de desempate o Id em vez de nome)-> A antes do k, ex: 
+
+    [#382 -> Kyogre: Sea Basin Pokémon - ['water'] - ['Drizzle'] - 352.0kg - 4.5m - 3% - true - 3 gen] - 24/06/2002
+    [#493 -> Arceus: Alpha Pokémon - ['normal'] - ['Multitype'] - 320.0kg - 3.2m - 3% - true - 4 gen] - 10/12/2006
+
+
+tp  - Selecao Parcial
+
+
+14. Radixsort em C (Falta o algorítimo nos slides, esta o do counting sort)
+
+16. Ordenação PARCIAL por Inserção em C:
+
+17. Heapsort PARCIAL em C
+
+18. Quicksort PARCIAL em Java:

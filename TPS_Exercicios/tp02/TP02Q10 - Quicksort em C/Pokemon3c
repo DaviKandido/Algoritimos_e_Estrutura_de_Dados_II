@@ -9,7 +9,7 @@
 #define TAMANHO 801
 
 #define FILE_PATH "/tmp/pokemon.csv"
-// #define FILE_PATH "pokemon.csv"
+//#define FILE_PATH "pokemon.csv"
 
 // Estrutura de data
 typedef struct {
@@ -287,31 +287,73 @@ void swap(Pokemon **pokemon, int i, int j) {
     pokemon[j] = tmp;
 }
 
+void OrdenarPokemonsQuickSort_PorName(Pokemon **pokemon, int esq, int dir) {
+    int i = esq, j = dir;
+    char* pivo = pokemon[(esq + dir) / 2]->name;
+
+    while (i <= j) {
+        while (strcmp(pokemon[i]->name, pivo) < 0) {
+            i++;
+        }
+        while (strcmp(pokemon[j]->name, pivo) > 0) { 
+            j--;
+        }
+        if (i <= j) {
+            swap(pokemon, i, j);  
+            
+            i++;
+            j--;
+        }
+    }
+
+    // Chama recursivamente o QuickSort para as duas metades
+    if (esq < j)
+        OrdenarPokemonsQuickSort_PorName(pokemon, esq, j);
+    if (i < dir)
+        OrdenarPokemonsQuickSort_PorName(pokemon, i, dir);
+}
+
+
 void OrdenarPokemonsQuickSort(Pokemon **pokemon, int esq, int dir, int *Comparacoes, int *Movimentacoes) {
     if (esq >= dir) return; // Caso base para evitar chamadas desnecessárias
 
     int i = esq, j = dir;
     Pokemon *pivo = pokemon[(esq + dir) / 2];
 
-    while (i <= j) {
+    while (i <= j && pivo != NULL) {
         // Comparação com o pivô
-        while ((pokemon[i]->generation < pivo->generation || (pokemon[i]->generation == pivo->generation && strcmp(pokemon[i]->name, pivo->name) < 0))) {
-            (*Comparacoes)++;
-            i++;
-        }
-        while ( (pokemon[j]->generation > pivo->generation || (pokemon[j]->generation == pivo->generation && strcmp(pokemon[j]->name, pivo->name) > 0))) {
-            (*Comparacoes)++;
-            j--;
-        }
 
+        if (pokemon[i]->generation == pivo->generation) {
+
+            while (strcpy(pokemon[i]->name, pivo->name) < 0){
+                (*Comparacoes)++;
+                i++;
+            }
+                
+            while(strcpy(pokemon[j]->name, pivo->name) > 0){
+                (*Comparacoes)++;
+                j--;
+            }
+        }else{
+            while (pokemon[i]->generation < pivo->generation) {
+                (*Comparacoes)++;
+                i++;
+            }
+            while (pokemon[j]->generation > pivo->generation)  {
+                    (*Comparacoes)++;
+                    j--;
+            }
+        }
 
         // Troca apenas se os índices forem válidos
         if (i <= j) {
-            (*Movimentacoes) += 3;
+            (*Movimentacoes) += 3; 
             swap(pokemon, i, j);
             i++;
             j--;
         }
+
+        
     }
 
     // Chamadas recursivas
@@ -331,7 +373,6 @@ int main(void) {
     
     if (!pokemons) {
         printf("Pokemons nao inicializados\n");
-        return 1;
     }
 
     Pokemon *pokemonBuscados[200];
@@ -348,8 +389,9 @@ int main(void) {
         }
     }
 
+    OrdenarPokemonsQuickSort_PorName(pokemonBuscados, 0, i - 1);
     start = clock();
-    OrdenarPokemonsQuickSort(pokemonBuscados, 0, i - 1, &Comparacoes, &movimentacoes); // 
+     OrdenarPokemonsQuickSort(pokemonBuscados, 0, i - 1, &Comparacoes, &movimentacoes); // 
     end = clock();
 
     for (int j = 0; j < i; j++) {

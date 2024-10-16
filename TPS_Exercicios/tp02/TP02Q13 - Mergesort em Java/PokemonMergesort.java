@@ -20,7 +20,7 @@
  import java.io.File;
  import java.io.RandomAccessFile;
  
- public class PokemonHeap{
+ public class PokemonMergesort{
  
      // static SimpleDateFormat ddf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
  
@@ -174,7 +174,7 @@
                                      
              pokemon.setWeight(campos[7].isEmpty() ? 0.0 : Double.parseDouble(campos[7])); 
              pokemon.setHeight(campos[8].isEmpty() ? 0.0 : Double.parseDouble(campos[8]));         
-             pokemon.setCaptureRate(Integer.parseInt(campos[9])); 
+             pokemon.setCaptureRate(campos[9].isEmpty() ? 0 : Integer.parseInt(campos[9])); 
              pokemon.setIsLegendary(campos[10].equals("1")); 
      
              // Converte a data para o formato correto
@@ -259,81 +259,62 @@
     }
 
 
-    //--------------------Metodos heapSort------------------------------//
-    public static void swap(Pokemon pokemon[], int i, int j) {
-        Pokemon tmp = pokemon[i];
-        pokemon[i] = pokemon[j];
-        pokemon[j] = tmp; 
-    }
+    public static void intercalar(Pokemon pokemon[], int esq, int meio, int dir, int dados[]) {
+
+        int nEsq = (meio+1)-esq;
+        int nDir = dir - meio;
     
-    public static void construir(Pokemon pokemon[], int tam) {
-        for (int i = tam; i > 1 && (pokemon[i] != null) && pokemon[i].getHeight() > pokemon[i/2].getHeight(); i /= 2) {
-            swap(pokemon, i, i / 2);
+        Pokemon[] arrayEsq = new Pokemon[nEsq+1];
+        Pokemon[] arrayDir = new Pokemon[nDir+1];
+    
+        // Criando objetos Pokemon para as sentinelas
+        arrayEsq[nEsq] = new Pokemon();
+        arrayEsq[nEsq].types = new ArrayList<>(Arrays.asList("ZZZZZZZZZZZZZ", "ZZZZZZZZZZZZZZ"));
+    
+        arrayDir[nDir] = new Pokemon();
+        arrayDir[nDir].types = new ArrayList<>(Arrays.asList("ZZZZZZZZZZZZZ", "ZZZZZZZZZZZZZZ"));
+    
+        int iEsq, iDir, i;
+    
+        // Inicializa primeiro subarray
+        for(iEsq = 0; iEsq < nEsq; iEsq++){
+            dados[1]++;
+            arrayEsq[iEsq] = pokemon[esq+iEsq];
         }
-    }
     
-    public static int getMaiorFilho(Pokemon pokemon[], int i, int tam) {
-        int filho;
-        if (2 * i == tam) {
-            filho = 2 * i;
-        } else if (pokemon[2 * i].getHeight() > pokemon[2 * i + 1].getHeight()) {
-            filho = 2 * i;
-        } else if (pokemon[2 * i].getHeight() < pokemon[2 * i + 1].getHeight()) {
-            filho = 2 * i + 1;
+        // Inicializa segundo subarray
+        for(iDir = 0; iDir < nDir; iDir++){
+            dados[1]++;
+            arrayDir[iDir] = pokemon[(meio+1)+iDir];
+        }
+    
+    // Intercalação propriamente dita
+    iEsq = iDir = 0; // Reiniciar os índices de controle
+    for (i = esq; i <= dir; i++) {
+        // Se arrayEsq acabou, pegue de arrayDir
+        dados[0]+=2;
+        if  (arrayEsq[iEsq].getTypes().get(0).compareTo(arrayDir[iDir].getTypes().get(0)) < 0 
+        || (arrayEsq[iEsq].getTypes().get(0).compareTo(arrayDir[iDir].getTypes().get(0)) == 0) && (arrayEsq[iEsq].getName().compareTo(arrayDir[iDir].getName()) < 0)) {
+            dados[1]++;
+            pokemon[i] = arrayEsq[iEsq++];
         } else {
-            if (pokemon[2 * i].getName().compareTo(pokemon[2 * i + 1].getName()) > 0) {
-                filho = 2 * i;
-            } else {
-                filho = 2 * i + 1;
-            }
+            dados[1]++;
+            pokemon[i] = arrayDir[iDir++];
         }
-        return filho;
-    }
-    
-    public static boolean hasFilho(int i, int tam) {
-        return (i <= (tam / 2));
-    }
-    
-    public static void reconstruir(Pokemon pokemon[], int tam) {
-        int i = 1;
-        while (hasFilho(i, tam) == true) {
-            int filho = getMaiorFilho(pokemon, i, tam);
-            if ((pokemon[i] != null) && pokemon[i].getHeight() < pokemon[filho].getHeight()) {
-                swap(pokemon, i, filho);
-                i = filho;
-            } else if ( (pokemon[i] != null) && pokemon[i].getHeight() == pokemon[filho].getHeight()) {
-                if (pokemon[i].getName().compareTo(pokemon[filho].getName()) < 0) {
-                    swap(pokemon, i, filho);
-                    i = filho;
-                } else {
-                    i = tam; // Sai do loop
-                }
-            } else {
-                i = tam; // Sai do loop
-            }
-        }
-    }
-    
-    public static int[] heapSort(Pokemon pokemon[], int n) {
-        int dados[] = new int[2];
-        dados[0]++;
-        dados[1]++;
-        // Construção do heap
-        for (int tam = 2; tam <= n; tam++) {
-            construir(pokemon, tam);
-        }
-    
-        // Ordenação propriamente dita
-        int tam = n;
-        while (tam > 1) {
-            swap(pokemon, 1, tam--);
-            reconstruir(pokemon, tam);
-        }
-    
-        return dados;
+      }
     }
 
-        //--------------------END - Metodos heapSort------------------------------//
+
+
+
+    public static void ordenacaoMergsort(Pokemon pokemon[], int esq, int dir, int dados []){
+        if(esq < dir){
+            int meio = (esq+dir) / 2;
+            ordenacaoMergsort(pokemon, esq, meio, dados);
+            ordenacaoMergsort(pokemon, meio+1, dir, dados);
+            intercalar(pokemon, esq, meio, dir, dados);
+        }
+    }
 
  
      public static void main(String[] args) {
@@ -341,7 +322,8 @@
          
          Scanner sc = new Scanner(System.in);
          boolean parar = true;
-         int i = 1;
+         int i = 0;
+
          
          Pokemon pokemon[] = new Pokemon[801];
          pokemon = lerPokemon(pokemon);
@@ -361,19 +343,26 @@
                     Pokemon pokemonEncontrado = ProcuraPokemon(pokemon, id);
                     if (pokemonEncontrado != null) {
                         pokemonsBuscados[i++] = pokemonEncontrado;
+                    }else{
+                        System.out.println("Pokemon no indice " + i + " é nulo");
                     }
                     
                 }
             }
 
+            int dados[] = new int[2];
             
         long start = System.currentTimeMillis(); //Variáveis de analise de Execução
 
-        int dados[] = heapSort(pokemonsBuscados, i);
+        //--------------------Metodos de ordenação por Margesort------------------------------//
+
+            ordenacaoMergsort(pokemonsBuscados, 0, i-1, dados);
+
+        //--------------------END - Margesort------------------------------//
 
         long FimTime = System.currentTimeMillis() - start;
 
-        for(int j = 1; (pokemonsBuscados[j] != null) && j <= i; j++){
+        for(int j = 0; j < i; j++){
             pokemonsBuscados[j].printPokemon();
         }
             
@@ -381,7 +370,7 @@
 
      
 
-         GravarArquivoDeExecucao("857859_heapsort.txt", dados[0], dados[1], FimTime); //Arquivo de analise de Execução
+         GravarArquivoDeExecucao("857859_mergesort.txt", dados[0], dados[1], FimTime); //Arquivo de analise de Execução
 
 
         }
