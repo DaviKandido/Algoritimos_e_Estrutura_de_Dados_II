@@ -5,11 +5,15 @@
 #include <ctype.h>
 #include <time.h>
 
+
 #define MAX 100 
 #define TAMANHO 801
 
 #define FILE_PATH "/tmp/pokemon.csv"
-// #define FILE_PATH "pokemon.csv"
+//#define FILE_PATH "pokemon.csv"
+
+int Comparacoes = 0;
+int Movimentacoes = 0;
 
 // Estrutura de data
 typedef struct {
@@ -35,7 +39,7 @@ typedef struct {
 
 
 bool isFim(char* entrada){
-    return (strlen(entrada) == 3 && entrada[0] == 'F' && entrada[1] && entrada[2]);
+    return (strlen(entrada) == 3 && entrada[0] == 'F' && entrada[1] == 'I' && entrada[2] == 'M');
 }
 
 //Função para procurar um Pokémon com o di ID
@@ -267,7 +271,7 @@ void printarPokemon(Pokemon *pokemon) {
            pokemon->captureDate.mes, 
            pokemon->captureDate.ano);
 }
-void GravarArquivoDeExecucao(const char *Filename, int Comparacoes, int movimentacoes, long timeTotal) {
+void GravarArquivoDeExecucao(const char *Filename, long timeTotal) {
 
     FILE *arquivo = fopen(Filename, "w+");
 
@@ -275,92 +279,288 @@ void GravarArquivoDeExecucao(const char *Filename, int Comparacoes, int moviment
         printf("ERRO ao gerar o arquivo\n");
     } else {
 
-        fprintf(arquivo, "857859\t%d\t%d\t%ldms", Comparacoes, movimentacoes, timeTotal);
+        fprintf(arquivo, "857859\t%d\t%d\t%ldms", Comparacoes, Movimentacoes, timeTotal);
         
         fclose(arquivo);
     }
 }
 
-void swap(Pokemon **pokemon, int i, int j) {
-    Pokemon *tmp = pokemon[i];
-    pokemon[i] = pokemon[j];
-    pokemon[j] = tmp;
+
+// ------------------------------------  Célula Flexível -------------------------------------------- //
+
+typedef struct Celula {
+    Pokemon *pokemon;
+    struct Celula *prox;
+}Celula;
+
+Celula *new_Celula(Pokemon *pokemon) {
+    Celula *temp = (Celula*)malloc(sizeof(Celula));
+    temp->pokemon = pokemon;
+    temp->prox = NULL;
+    return temp;
 }
 
-void OrdenarPokemonsQuickSort(Pokemon **pokemon, int esq, int dir, int *Comparacoes, int *Movimentacoes) {
-    if (esq >= dir) return; // Caso base para evitar chamadas desnecessárias
+// ------------------------------------ END - Célula Flexível -------------------------------------------- //
 
-    int i = esq, j = dir;
-    Pokemon *pivo = pokemon[(esq + dir) / 2];
 
-    while (i <= j) {
-        // Comparação com o pivô
-        while ((pokemon[i]->generation < pivo->generation || (pokemon[i]->generation == pivo->generation && strcmp(pokemon[i]->name, pivo->name) < 0))) {
-            (*Comparacoes)++;
-            i++;
+// ------------------------------------ Lista Flexível -------------------------------------------- //
+
+    /**
+    * Lista Flexivel
+    * @author Davi Cândido de almeida
+    * @version 2 10/2024
+    */
+
+
+    typedef struct Lista{
+        struct Celula *primeiro, *ultimo;
+        int size;
+    }Lista;
+
+    Lista new_Lista(){
+        Lista temp;
+        temp.primeiro = temp.ultimo = new_Celula(NULL);
+        temp.size = 0;
+        return temp;
+    }
+
+    int size_lista(Lista *lista){
+        return lista->size;
+    }
+
+    void inserirInicio(Lista *lista, Pokemon *pokemon){
+        Celula *temp = new_Celula(pokemon);
+        temp->prox = lista->primeiro;
+
+        lista->primeiro->pokemon = pokemon;
+
+        lista->primeiro = temp;
+        lista->size++;
+    }
+
+    void inserirFim(Lista *lista, Pokemon *pokemon){
+        lista->ultimo->prox = new_Celula(pokemon);
+        lista->ultimo = lista->ultimo->prox;
+        lista->size++;
+    }
+
+    void inserir(Lista *lista, Pokemon *pokemon, int pos){
+        if(pos < 0 || pos > lista->size)
+            printf("Erro ao tentar inserir na posicao (%d/ tamanho = %d) invalida!", pos, lista->size);
+        else if (pos == 0)
+            inserirInicio(lista, pokemon);
+        else if (pos == lista->size)
+            inserirFim(lista, pokemon);
+        else{
+        
+        Celula *ant = lista->primeiro;
+        for(int i = 0; i < pos; i++){
+            ant = ant->prox;
         }
-        while ( (pokemon[j]->generation > pivo->generation || (pokemon[j]->generation == pivo->generation && strcmp(pokemon[j]->name, pivo->name) > 0))) {
-            (*Comparacoes)++;
-            j--;
+        Celula *temp = new_Celula(pokemon);
+        temp->prox = ant->prox;
+        ant->prox = temp;
+        lista->size++;
+        
         }
 
+    }
 
-        // Troca apenas se os índices forem válidos
-        if (i <= j) {
-            (*Movimentacoes) += 3;
-            swap(pokemon, i, j);
-            i++;
-            j--;
+    Pokemon *remover(Lista *lista, int pos){
+        
+
+        if(lista->primeiro == lista->ultimo){
+            printf("\nA lista esta vazia!\n");
+            return 0;
+        }else if(pos < 0 || pos > lista->size-1)
+            printf("Erro ao tentar remover item da posicao (%d/ tamanho = %d) invalida!", pos, lista->size);
+        else{
+
+            Celula *ant = lista->primeiro;
+            for(int i = 0; i < pos; i++)
+                ant = ant->prox;
+
+            Celula *temp = ant->prox;
+            Pokemon *pokemon = temp->pokemon;
+            ant->prox = temp->prox;
+            free(temp);
+
+            if(pos == lista->size-1)    
+                lista->ultimo = ant;
+            lista->size--;
+
+            return pokemon;
+        }
+
+    }
+
+    Pokemon* removerInicio(Lista *lista){
+        return remover(lista, 0);
+    }
+
+    Pokemon* removerFim(Lista *lista){
+        return remover(lista, lista->size-1);
+    }
+
+    bool pesquisar_lista(Lista *lista, Pokemon *pokemon){
+        Celula *i;
+        for (i = lista->primeiro->prox; i != NULL; i = i->prox)
+            if(i->pokemon == pokemon)
+                return true;
+        return false;
+    }
+
+
+    void print_lista(Lista *l){
+        Celula *i;
+        int count = 0;
+        for (i = l->primeiro->prox; i != NULL; i = i->prox)
+        {
+            
+        printf("[%d] ", count++);
+        printf("[#%d -> %s: %s - ", i->pokemon->id, i->pokemon->name, i->pokemon->description);
+
+        // Imprime os tipos
+        printf("['%s'", i->pokemon->type[0]);
+        if (strlen(i->pokemon->type[1]) > 0) {
+            printf(", '%s'", i->pokemon->type[1]);
+        }
+        printf("] - ");
+
+        // Imprime as habilidades
+        printf("[");
+        for (int j = 0; strlen(i->pokemon->abilities[j]) > 0; j++) {
+            printf("'%s'", i->pokemon->abilities[j]);
+            if (strlen(i->pokemon->abilities[j + 1]) > 0) {
+                printf(", ");
+            }
+        }
+        printf("] - ");
+
+        printf("%.1lfkg - %.1lfm - %d%% - %s - %d gen] - %02d/%02d/%d\n", 
+            i->pokemon->weight, 
+            i->pokemon->height, 
+            i->pokemon->captureRate, 
+            i->pokemon->isLegendary ? "true" : "false", 
+            i->pokemon->generation,
+            i->pokemon->captureDate.dia, 
+            i->pokemon->captureDate.mes, 
+            i->pokemon->captureDate.ano);
         }
     }
 
-    // Chamadas recursivas
-    if (esq < j)
-        OrdenarPokemonsQuickSort(pokemon, esq, j, Comparacoes, Movimentacoes);
-    if (i < dir)
-        OrdenarPokemonsQuickSort(pokemon, i, dir, Comparacoes, Movimentacoes);
-}
+    void delete_lista(Lista *lista){
+        while(lista->size > 0)
+            remover(lista,0);
+
+        free(lista->primeiro);
+
+    }
+
+// ------------------------------------ END - Lista liner -------------------------------------------- //
 
 int main(void) {
-    clock_t start, end;
+
+    clock_t startClock, endClock;
     double timeTotal;
-    int Comparacoes = 0;
-    int movimentacoes = 0;
+
 
     Pokemon* pokemons = lerTodoArquivo(FILE_PATH);
-    
-    if (!pokemons) {
-        printf("Pokemons nao inicializados\n");
-        return 1;
-    }
 
-    Pokemon *pokemonBuscados[200];
+    Lista listaPokemons = new_Lista();
+
     char entrada[30];
     int id;
-    int i = 0;
-
+    
     while (scanf("%s", entrada) && !isFim(entrada)) {
         sscanf(entrada, "%d", &id);
-        Pokemon *pokemonEncontrado = procurar(pokemons, id);
 
-        if (pokemonEncontrado != NULL) {
-            pokemonBuscados[i++] = pokemonEncontrado; 
+        inserirFim( &listaPokemons, procurar(pokemons, id));
+    }
+
+
+    startClock = clock();
+
+    int numOp = 0;
+
+    Pokemon *pokesExcluidos[50];
+    int k = 0;
+
+    scanf("%d", &numOp);
+
+        for(int j = 0; j < numOp; j++){
+
+
+            char* op = (char*) malloc(sizeof(char) * 3);
+            scanf("%s", op);
+
+            Comparacoes++;
+
+            if(strcmp(op, "II") == 0){
+
+                int num;
+                scanf("%d", &num);
+                Movimentacoes++;
+                inserirInicio(&listaPokemons, procurar(pokemons, num));
+
+            } else  Comparacoes++; if(strcmp(op, "IF") == 0){ 
+
+                int num;
+                scanf("%d", &num);
+                Movimentacoes++;
+                inserirFim(&listaPokemons, procurar(pokemons, num));
+
+            }else  Comparacoes++; if(strcmp(op, "RI") == 0){
+
+                Movimentacoes++;
+                pokesExcluidos[k++] = removerInicio(&listaPokemons);
+
+            }else  Comparacoes++; if(strcmp(op, "RF") == 0){
+
+                Movimentacoes++;
+                pokesExcluidos[k++] = removerFim(&listaPokemons);
+
+            }else  Comparacoes++; if(strcmp(op, "I*") == 0){
+
+                int pos ;
+                scanf("%d", &pos);
+                int num ;
+                scanf("%d", &num);
+                Movimentacoes++;
+                inserir(&listaPokemons, procurar(pokemons, num), pos);
+
+            }else  Comparacoes++; if(strcmp(op, "R*") == 0){
+
+                int pos;
+                scanf("%d", &pos);
+                Movimentacoes++;
+                pokesExcluidos[k++] = remover(&listaPokemons, pos);
+
+            }
+
+            free(op);
         }
+
+
+    for(int i = 0; i < k; i++){
+        printf("(R) %s\n", pokesExcluidos[i]->name);
     }
 
-    start = clock();
-    OrdenarPokemonsQuickSort(pokemonBuscados, 0, i - 1, &Comparacoes, &movimentacoes); // 
-    end = clock();
 
-    for (int j = 0; j < i; j++) {
-        printarPokemon(pokemonBuscados[j]);
-    }
+
+    print_lista(&listaPokemons);
+
+
+    endClock = clock();
+
+
 
     // Finaliza a contagem do tempo
-    timeTotal = ((double)(end - start));
+    timeTotal = ((double)(endClock - startClock));
 
-    GravarArquivoDeExecucao("857859_quicksort.txt", Comparacoes, movimentacoes, timeTotal);
-    
+    GravarArquivoDeExecucao("857859_AlocacaoFlexivel.txt", timeTotal);
+
     free(pokemons);
+
     return 0;
 }

@@ -1,0 +1,60 @@
+Média: 45
+Média: 45
+Média: 77
+Média: 105
+Média: 105
+Média: 95
+Média: 107
+Média: 123
+Média: 127
+Média: 145
+Média: 148
+Média: 95
+Média: 89
+Média: 118
+Média: 79
+Média: 131
+Média: 170
+Média: 123
+Média: 123
+Média: 66
+Média: 68
+Média: 98
+Média: 116
+Média: 153
+Média: 166
+Média: 148
+Média: 181
+Média: 140
+Média: 87
+Média: 87
+Média: 35
+Média: 45
+Média: 49
+Média: 56
+Média: 75
+Média: 75
+Média: 71
+Média: 65
+Média: 36
+Média: 36
+(R) Tirtouga
+(R) Mamoswine
+(R) Thundurus
+(R) Emboar
+(R) Krabby
+Média: 60
+Média: 158
+(R) Corsola
+(R) Rattata
+(R) Arbok
+Média: 180
+Média: 105
+Média: 155
+Média: 131
+
+[0] [#777 -> Togedemaru: Roly-Poly Pokémon - ['electric', 'steel'] - ['Sturdy', 'Shed Skin', 'Sturdy'] - 3.3kg - 0.3m - 180% - false - 7 gen] - 04/09/2016
+[1] [#466 -> Electivire: Thunderbolt Pokémon - ['electric'] - ['Sturdy', 'Shed Skin', 'Sturdy'] - 138.6kg - 1.8m - 30% - false - 4 gen] - 15/07/2006
+[2] [#328 -> Trapinch: Ant Pit Pokémon - ['ground'] - ['Sturdy', 'Shed Skin', 'Sturdy'] - 15.0kg - 0.7m - 255% - false - 3 gen] - 23/04/2002
+[3] [#740 -> Crabominable: Woolly Crab Pokémon - ['fighting', 'ice'] - ['Sturdy', 'Shed Skin', 'Sturdy'] - 180.0kg - 1.7m - 60% - false - 7 gen] - 25/03/2016
+[4] [#438 -> Bonsly: Bonsai Pokémon - ['rock'] - ['Sturdy', 'Shed Skin', 'Sturdy'] - 15.0kg - 0.5m - 255% - false - 4 gen] - 31/08/2006
