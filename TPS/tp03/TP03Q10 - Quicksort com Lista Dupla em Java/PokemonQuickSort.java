@@ -22,7 +22,7 @@
 
 
 
- public class PokemonAlocacaoSequencial {
+ public class PokemonQuickSort {
 
 
         public static int comparacoes;
@@ -49,7 +49,6 @@
     }
 
     public static void main(String[] args) {
-
          
         Scanner sc = new Scanner(System.in);
         boolean parar = true;
@@ -60,9 +59,9 @@
 
         gp.lerPokemon();
 
-        Lista listaPokemons = new Lista(801);
+        ListaDupla listaPokemons = new ListaDupla();
 
-        Pokemon pokesExcluidos[] = new Pokemon[20];
+        Pokemon pokesExcluidos[] = new Pokemon[30];
                 
         // Ler até encontrar "FIM"
         while (parar) {
@@ -71,7 +70,6 @@
             if (isFim(entrada)) {
                 parar = false;
                } else {
-                   
                    int id = Integer.parseInt(entrada);
                    try{
                         Pokemon poke = gp.procuraPokemon(id);
@@ -154,202 +152,188 @@
 
     
 
-        GravarArquivoDeExecucao("857859_PilhaFlexivel.txt", comparacoes, movimentacoes, FimTime); //Arquivo de analise de Execução
+        GravarArquivoDeExecucao("857859_AlocacaoSequencial.txt", comparacoes, movimentacoes, FimTime); //Arquivo de analise de Execução
 
 
        }
  }
 
+ // ------------------------------------  Célula Flexível -------------------------------------------- //
+
+class CelulaDupla {
+    public Pokemon pokemon;
+    public CelulaDupla prox, ant;
+
+    public CelulaDupla(){
+        this(null);
+    }
 
 
- class Lista {
-    private Pokemon[] array;
-    private int n;
- 
- 
-    /**
-     * Construtor da classe.
-     */
-    public Lista () {
-       this(6);
+    public CelulaDupla(Pokemon pokemon) {
+        this.pokemon = pokemon;
+        this.prox = null;
     }
- 
- 
-    /**
-     * Construtor da classe.
-     * @param tamanho Tamanho da lista.
-     */
-    public Lista (int tamanho){
-       array = new Pokemon[tamanho];
-       n = 0;
-    }
- 
- 
-    /**
-     * Insere um elemento na primeira posicao da lista e move os demais
-     * elementos para o fim da lista.
-     * @param x int elemento a ser inserido.
-     * @throws Exception Se a lista estiver cheia.
-     */
-    public void inserirInicio(Pokemon x) throws Exception {
- 
-       //validar insercao
-       if(n >= array.length){
-          throw new Exception("Erro ao inserir!");
-       } 
- 
-       //levar elementos para o fim do array
-       for(int i = n; i > 0; i--){
-          array[i] = array[i-1];
-       }
- 
-       array[0] = x;
-       n++;
-    }
- 
- 
-    /**
-     * Insere um elemento na ultima posicao da lista.
-     * @param x int elemento a ser inserido.
-     * @throws Exception Se a lista estiver cheia.
-     */
-    public void inserirFim(Pokemon x) throws Exception {
- 
-       //validar insercao
-       if(n >= array.length){
-          throw new Exception("Erro ao inserir!");
-       }
- 
-       array[n] = x;
-       n++;
-    }
- 
- 
-    /**
-     * Insere um elemento em uma posicao especifica e move os demais
-     * elementos para o fim da lista.
-     * @param x int elemento a ser inserido.
-     * @param pos Posicao de insercao.
-     * @throws Exception Se a lista estiver cheia ou a posicao invalida.
-     */
-    public void inserir(Pokemon x, int pos) throws Exception {
- 
-       //validar insercao
-       if(n >= array.length || pos < 0 || pos > n){
-          throw new Exception("Erro ao inserir!");
-       }
- 
-       //levar elementos para o fim do array
-       for(int i = n; i > pos; i--){
-          array[i] = array[i-1];
-       }
- 
-       array[pos] = x;
-       n++;
-    }
- 
- 
-    /**
-     * Remove um elemento da primeira posicao da lista e movimenta 
-     * os demais elementos para o inicio da mesma.
-     * @return resp int elemento a ser removido.
-     * @throws Exception Se a lista estiver vazia.
-     */
-    public Pokemon removerInicio() throws Exception {
- 
-       //validar remocao
-       if (n == 0) {
-          throw new Exception("Erro ao remover!");
-       }
- 
-       Pokemon resp = array[0];
-       n--;
- 
-       for(int i = 0; i < n; i++){
-          array[i] = array[i+1];
-       }
- 
-       return resp;
-    }
- 
- 
-    /**
-     * Remove um elemento da ultima posicao da lista.
-     * @return resp int elemento a ser removido.
-     * @throws Exception Se a lista estiver vazia.
-     */
-    public Pokemon removerFim() throws Exception {
- 
-       //validar remocao
-       if (n == 0) {
-          throw new Exception("Erro ao remover!");
-       }
- 
-       return array[--n];
-    }
- 
- 
-    /**
-     * Remove um elemento de uma posicao especifica da lista e 
-     * movimenta os demais elementos para o inicio da mesma.
-     * @param pos Posicao de remocao.
-     * @return resp int elemento a ser removido.
-     * @throws Exception Se a lista estiver vazia ou a posicao for invalida.
-     */
-    public Pokemon remover(int pos) throws Exception {
- 
-       //validar remocao
-       if (n == 0 || pos < 0 || pos >= n) {
-          throw new Exception("Erro ao remover!");
-       }
- 
-       Pokemon resp = array[pos];
-       n--;
- 
-       for(int i = pos; i < n; i++){
-          array[i] = array[i+1];
-       }
- 
-       return resp;
-    }
- 
- 
-    /**
-     * Mostra os elementos da lista separados por espacos.
-     */
-    public void mostrar (){
-       for(int i = 0; i < n; i++){
-        SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String formattedDate = outputDateFormat.format(array[i].getCaptureDate());
+}
+// ------------------------------------ END - Célula Flexível -------------------------------------------- //
 
-        System.out.println("[" + i + "] [#"
-                            + array[i].getId() + " -> "
-                            + array[i].getName() + ": "
-                            + array[i].getDescription() + " - "
-                            + array[i].getTypes() + " - "
-                            + array[i].getAbilities() + " - "
-                            + array[i].getWeight() + "kg - "
-                            + array[i].getHeight() + "m - "
-                            + array[i].getCaptureRate() + "% - "
-                            + array[i].getIsLegendary() + " - "
-                            + array[i].getGeneration() + " gen] - " // Corrigido: Usar getGeneration() aqui
-                            + formattedDate 
-                          );
-       }
 
+
+ class ListaDupla {
+   
+    private CelulaDupla primeiro, ultimo;
+    private int size;
+ 
+    public ListaDupla(){
+       primeiro = new CelulaDupla();
+       ultimo = primeiro;    
+    }
+
+    public void inserirInicio(Pokemon pokemon){
+        CelulaDupla tmp = new CelulaDupla(pokemon);
+
+        tmp.ant = primeiro;
+        tmp.prox = primeiro.prox;
+        primeiro.prox = tmp;
+        if(primeiro == ultimo){
+            ultimo = tmp;
+        }else{
+            tmp.prox.ant = tmp;
+        }
+        tmp = null;
+
+        size++;
+    }
+
+    public void inserirFim(Pokemon pokemon){
+        ultimo.prox = new CelulaDupla(pokemon);
+        ultimo.prox.ant = ultimo;
+        ultimo = ultimo.prox;
+        size++;
+    }
+
+    public void inserir(Pokemon pokemon, int pos) throws Exception {
+
+        int tamanho = size;
+  
+        if(pos < 0 || pos > tamanho){
+              throw new Exception("Erro ao inserir posicao (" + pos + " / tamanho = " + tamanho + ") invalida!");
+        } else if (pos == 0){
+           inserirInicio(pokemon);
+        } else if (pos == tamanho){
+           inserirFim(pokemon);
+        } else {
+             // Caminhar ate a posicao anterior a insercao
+           CelulaDupla i = primeiro;
+           for(int j = 0; j < pos; j++, i = i.prox);
+          
+           CelulaDupla tmp = new CelulaDupla(pokemon);
+           tmp.ant = i;
+           tmp.prox = i.prox;
+           tmp.ant.prox = tmp.prox.ant = tmp;
+           tmp = i = null;
+
+           size++;
+        }
+     }
+
+
+     public Pokemon removerInicio() throws Exception{
+        if (primeiro == ultimo){
+            throw new Exception("Erro ao remover (vazia)!");
+        }
+
+        CelulaDupla tmp = primeiro;
+        primeiro = primeiro.prox;
+        Pokemon resp = primeiro.pokemon;
+        tmp.prox = primeiro.ant = null;
+        tmp = null;
+        size--;
+
+        return resp;
+     }
+
+    public Pokemon removerFim() throws Exception{
+        if (primeiro == ultimo){
+            throw new Exception("Erro ao remover (vazia)!");
+        }
+
+        Pokemon resp = ultimo.pokemon;
+        ultimo = ultimo.ant;
+        ultimo.prox.ant = null;
+        ultimo.prox = null;
+        size--;
+
+        return resp;
+     }
+
+   
+
+     public Pokemon remover(int pos) throws Exception {
+        Pokemon resp;
+        int tamanho = size;
+  
+          if (primeiro == ultimo){
+              throw new Exception("Erro ao remover (vazia)!");
+  
+        } else if(pos < 0 || pos >= tamanho){
+              throw new Exception("Erro ao remover (posicao " + pos + " / " + tamanho + " invalida!");
+        } else if (pos == 0){
+           resp = removerInicio();
+        } else if (pos == tamanho - 1){
+           resp = removerFim();
+        } else {
+             // Caminhar ate a posicao anterior a insercao
+           CelulaDupla i = primeiro.prox;
+           for(int j = 0; j < pos; j++, i = i.prox);
+          
+           i.ant.prox = i.prox;
+           i.prox.ant = i.ant;
+           resp = i.pokemon;
+           i.prox = i.ant = null;
+           i = null;
+        }
+  
+          return resp;
+      }
+
+	public void mostrar() {
+		mostrar(primeiro.prox, 0);
+	}
+
+
+    /**
+     * Mostra os elementos da pilha.
+     */
+    private void mostrar(CelulaDupla i, int count){
+        if(i != null){
+            SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String formattedDate = outputDateFormat.format(i.pokemon.getCaptureDate());
+
+            System.out.println("[" + (count) + "] [#"
+                                + i.pokemon.getId() + " -> "
+                                + i.pokemon.getName() + ": "
+                                + i.pokemon.getDescription() + " - "
+                                + i.pokemon.getTypes() + " - "
+                                + i.pokemon.getAbilities() + " - "
+                                + i.pokemon.getWeight() + "kg - "
+                                + i.pokemon.getHeight() + "m - "
+                                + i.pokemon.getCaptureRate() + "% - "
+                                + i.pokemon.getIsLegendary() + " - "
+                                + i.pokemon.getGeneration() + " gen] - " // Corrigido: Usar getGeneration() aqui
+                                + formattedDate 
+                            );
+            mostrar(i.prox, ++count);
+       }
     }
  
  
     /**
      * Procura um elemento e retorna se ele existe.
-     * @param x int elemento a ser pesquisado.
-     * @return <code>true</code> se o array existir,
-     * <code>false</code> em caso contrario.
      */
     public boolean pesquisar(Pokemon x) {
        boolean retorno = false;
-       for (int i = 0; i < n && retorno == false; i++) {
-          retorno = (array[i] == x);
+       for (CelulaDupla i = primeiro.prox; i != null && retorno == false; i = i.prox) {
+          retorno = (i.pokemon == x);
        }
        return retorno;
     }
