@@ -1,6 +1,6 @@
 public class Tp3Q1 {
     public static void main(String[] args) {
-        GerenciadorPokemons gp = new GerenciadorPokemons();
+        GerenciadorDePokemons gp = new GerenciadorDePokemons();
         gp.lerPokemonsDeArquivo();
         Pokemon[] pokemons = gp.getPokemons();
 
@@ -9,17 +9,17 @@ public class Tp3Q1 {
     }
 }
 
-class Lista {
+class ListaDe {
     Pokemon[] array;
     int n;
     //IMPLEMENTAR
 }
 
-class Pokemon {
+class PokemonDe {
     //atributos, getters, setters, clone, etc
 }
 
-class GerenciadorPokemons {
+class GerenciadorDePokemons {
     private Pokemon[] pokemons = new Pokemon[801];
 
     public void lerPokemonsDeArquivo() {

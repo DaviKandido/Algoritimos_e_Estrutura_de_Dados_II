@@ -6,6 +6,7 @@
  * @update 2024-10-24
  */
 
+
  import java.io.BufferedReader;
  import java.io.FileReader;
  import java.io.IOException;
@@ -21,7 +22,12 @@
 
 
 
- public class PokemonQuickSort {
+ public class PokemonMatrizDinamica {
+
+
+        public static int comparacoes;
+        public static int movimentacoes;
+
 
         //Grava arquivo com paramentros de Execução
         public static void GravarArquivoDeExecucao(String filename, int Comparacoes, int Movimentacoes, long FimTime ){
@@ -42,14 +48,12 @@
         return (entrada.length() == 3 && entrada.charAt(0) == 'F' && entrada.charAt(1) == 'I' && entrada.charAt(2) == 'M');
     }
 
-
     public static void main(String[] args) {
          
         Scanner sc = new Scanner(System.in);
         boolean parar = true;
         int i = 0;
         int k = 0;
-
         
         GerenciaPokemon gp = new GerenciaPokemon();
 
@@ -57,6 +61,7 @@
 
         ListaDupla listaPokemons = new ListaDupla();
 
+        Pokemon pokesExcluidos[] = new Pokemon[30];
                 
         // Ler até encontrar "FIM"
         while (parar) {
@@ -77,47 +82,81 @@
                }
            }
 
+        int numOp = sc.nextInt();
 
-       long start = System.currentTimeMillis(); //Variáveis de analise de Execução
+        long start = System.currentTimeMillis(); //Variáveis de analise de Execução
 
-       listaPokemons.QuickSort(); //Chamada do quicksort
+        for(int j = 0; j < numOp; j++){
+            String op = sc.next();
+            comparacoes++;
+            if(op.equals("II")){
+                int num = sc.nextInt();
+                try{
+                    movimentacoes++;
+                    listaPokemons.inserirInicio(gp.procuraPokemon(num));
+                }catch(Exception e){
+                    System.out.println("Pokemon nao encontrado " + e.getMessage());
+                }
+            } else  comparacoes++; if(op.equals("IF")){ 
+                int num = sc.nextInt();
+                try{
+                    movimentacoes++;
+                    listaPokemons.inserirFim(gp.procuraPokemon(num));
+                }catch(Exception e){
+                    System.out.println("Pokemon nao encontrado " + e.getMessage());
+                }
+            }else  comparacoes++; if(op.equals("RI")){
+                try{
+                    movimentacoes++;
+                    pokesExcluidos[k++] = listaPokemons.removerInicio();
+                }catch(Exception e){
+                    System.out.println("Lista vazia " + e.getMessage());
+                }
+            }else  comparacoes++; if(op.equals("RF")){
+                try{
+                    movimentacoes++;
+                    pokesExcluidos[k++] = listaPokemons.removerFim();
+                }catch(Exception e){
+                    System.out.println("Lista vazia " + e.getMessage());
+                }
+            }else  comparacoes++; if(op.equals("I*")){
+                int pos = sc.nextInt();
+                int num = sc.nextInt();
+                try{
+                    movimentacoes++;
+                    listaPokemons.inserir(gp.procuraPokemon(num), pos);
+                }catch(Exception e){
+                    System.out.println("Lista vazia " + e.getMessage());
+                }
+            }else  comparacoes++; if(op.equals("R*")){
+                int pos = sc.nextInt();
+                try{
+                    movimentacoes++;
+                    pokesExcluidos[k++] = listaPokemons.remover(pos);
+                }catch(Exception e){
+                    System.out.println("Lista vazia " + e.getMessage());
+                }
+            }
+        }
 
+           
        long FimTime = System.currentTimeMillis() - start;
 
+       for(int j = 0; j < k; j++){
+        System.out.println("(R) " + pokesExcluidos[j].getName());
+       }
 
-    //    System.out.println("--------------------------END Pivo---------------------");
        listaPokemons.mostrar();
 
         sc.close();
 
     
 
-        GravarArquivoDeExecucao("857859_quicksort3.txt", GlobalVars.getComparacoes(), GlobalVars.getMovimentacoes(), FimTime); //Arquivo de analise de Execução
+        GravarArquivoDeExecucao("857859_AlocacaoSequencial.txt", comparacoes, movimentacoes, FimTime); //Arquivo de analise de Execução
 
 
        }
  }
-
-
- // ------------------------------------  Variáveis Globais -------------------------------------------- //
-
-class GlobalVars {
-    public static int comparacoes;
-    public static int movimentacoes;
-
-    public GlobalVars(){
-        comparacoes = 0;
-        movimentacoes = 0;
-    }
-    public static int getComparacoes() {
-        return comparacoes;
-    }
-    public static int getMovimentacoes() {
-        return movimentacoes;
-    }
-}
-
- // ------------------------------------  END - Variáveis Globais -------------------------------------------- //
 
  // ------------------------------------  Célula Flexível -------------------------------------------- //
 
@@ -144,10 +183,6 @@ class CelulaDupla {
     private CelulaDupla primeiro, ultimo;
     private int size;
  
-    public int getTamanho() {
-        return size;
-    }
-
     public ListaDupla(){
        primeiro = new CelulaDupla();
        ultimo = primeiro;    
@@ -274,7 +309,7 @@ class CelulaDupla {
             SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd/MM/yyyy");
             String formattedDate = outputDateFormat.format(i.pokemon.getCaptureDate());
 
-            System.out.println("[#"
+            System.out.println("[" + (count) + "] [#"
                                 + i.pokemon.getId() + " -> "
                                 + i.pokemon.getName() + ": "
                                 + i.pokemon.getDescription() + " - "
@@ -302,69 +337,6 @@ class CelulaDupla {
        }
        return retorno;
     }
-
-
-    private CelulaDupla obterPivo(int pos, CelulaDupla ci) {
-        CelulaDupla atual = ci; 
-        for (int i = 0; i < pos && atual != null; i++) {
-            atual = atual.prox;
-        }
-        return atual; 
-    }
-
-    void swap(CelulaDupla ci, CelulaDupla cj) {
-        Pokemon tmp = ci.pokemon;
-        ci.pokemon = cj.pokemon;
-        cj.pokemon = tmp;
-    }
-    
-
-
-    public void QuickSort(){
-        QuickSort(0, getTamanho() - 1, primeiro.prox, ultimo);
-    }
-
-
-    private void QuickSort(int esq, int dir, CelulaDupla cEsq, CelulaDupla cDir) {
-        
-        CelulaDupla ci = cEsq, cj = cDir;
-        int i = esq, j = dir;
-
-        CelulaDupla pivo = obterPivo((dir-esq)/2 , ci);
-        // CelulaDupla pivo = ci;
-
-        // pivo.pokemon.printPokemon();
-
-        while(i <= j){
-            // Comparação com o pivô
-            while(ci.pokemon.getGeneration() < pivo.pokemon.getGeneration() || (ci.pokemon.getGeneration() == pivo.pokemon.getGeneration() && ci.pokemon.getName().compareTo(pivo.pokemon.getName()) < 0)){
-                GlobalVars.comparacoes++;
-                i++;
-                ci = ci.prox;
-            }
-            while ( (cj.pokemon.getGeneration() > pivo.pokemon.getGeneration() || (cj.pokemon.getGeneration() == pivo.pokemon.getGeneration() && cj.pokemon.getName().compareTo(pivo.pokemon.getName()) > 0))) {
-                GlobalVars.comparacoes++;
-                j--;
-                cj = cj.ant;
-            }
-            if (i <= j) {
-                GlobalVars.movimentacoes += 3;
-                swap(ci, cj);
-                ci = ci.prox;
-                i++;
-                cj = cj.ant;
-                j--;
-            }
-         }
-    
-        // //Chamadas recursivas
-        if (esq < j) {
-            QuickSort(esq, j, cEsq, cj);
-        }
-        if (i < dir) {
-            QuickSort(i, dir, ci, cDir);
-        }
-     }
  }
 
 
@@ -519,7 +491,6 @@ class CelulaDupla {
     public Pokemon[] getPokemons() {
         return pokemon;
     }
-
  }
  
  

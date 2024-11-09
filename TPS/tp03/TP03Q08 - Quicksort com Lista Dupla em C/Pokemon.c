@@ -494,8 +494,8 @@ CelulaDupla *new_Celula_Dupla(Pokemon *pokemon) {
 
 
 CelulaDupla* obter_pivo(ListaDupla *lista, int pos) {
-    CelulaDupla *atual = lista->primeiro->prox;
-    for (int i = 0; i < pos && atual != NULL; i++) {
+    CelulaDupla *atual = lista->primeiro;
+    for (int i = 0; i <= pos; i++) {
         atual = atual->prox;
     }
     return atual; // Retorna a célula do pivô
@@ -525,20 +525,20 @@ void OrdenarPokemonsQuickSort(ListaDupla *lista, int esq, int dir, CelulaDupla *
         while ((ci->pokemon->generation < pivo->pokemon->generation || (ci->pokemon->generation == pivo->pokemon->generation && strcmp(ci->pokemon->name, pivo->pokemon->name) < 0))) {
             Comparacoes++;
             i++;
-            if (ci->prox != NULL) ci = ci->prox;
+            ci = ci->prox;
         }
         while ( (cj->pokemon->generation > pivo->pokemon->generation || (cj->pokemon->generation == pivo->pokemon->generation && strcmp(cj->pokemon->name, pivo->pokemon->name) > 0))) {
             Comparacoes++;
             j--;
-            if (cj->ant != NULL) cj = cj->ant;
+            cj = cj->ant;
         }
 
         if (i <= j) {
             Movimentacoes += 3;
             swap(lista, ci, cj);
-            if (ci->prox != NULL) ci = ci->prox;
+            ci = ci->prox;
             i++;
-            if (cj->ant != NULL) cj = cj->ant;
+            cj = cj->ant;
             j--;
         }
      }
