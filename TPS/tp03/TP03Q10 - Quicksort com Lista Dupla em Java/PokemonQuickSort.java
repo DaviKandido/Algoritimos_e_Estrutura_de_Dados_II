@@ -330,7 +330,7 @@ class CelulaDupla {
         CelulaDupla ci = cEsq, cj = cDir;
         int i = esq, j = dir;
 
-        CelulaDupla pivo = obterPivo((dir-esq)/2 , ci);
+        CelulaDupla pivo = obterPivo((dir+esq)/2, ci);
         // CelulaDupla pivo = ci;
 
         // pivo.pokemon.printPokemon();
