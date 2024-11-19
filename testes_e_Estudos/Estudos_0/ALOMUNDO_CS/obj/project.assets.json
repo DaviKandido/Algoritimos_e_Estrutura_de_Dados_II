@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/ALOMUNDO_CS.csproj",
+      "projectUniqueName": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/Estudos_0/ALOMUNDO_CS/ALOMUNDO_CS.csproj",
       "projectName": "ALOMUNDO_CS",
-      "projectPath": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/ALOMUNDO_CS.csproj",
+      "projectPath": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/Estudos_0/ALOMUNDO_CS/ALOMUNDO_CS.csproj",
       "packagesPath": "/home/cliente/.nuget/packages/",
-      "outputPath": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/ALOMUNDO_CS/obj/",
+      "outputPath": "/home/cliente/Documentos/GitHub/Algoritimos_e_Estrutura_de_Dados_II/testes_e_Estudos/Estudos_0/ALOMUNDO_CS/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/cliente/.nuget/NuGet/NuGet.Config"
@@ -59,7 +59,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.108/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.110/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
