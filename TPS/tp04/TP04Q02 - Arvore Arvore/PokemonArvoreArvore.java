@@ -271,8 +271,8 @@ class ArvoreDeArvore{
 
 
     public boolean pesquisar(String name){
-        System.out.println(name);
-        System.out.print("=>raiz ");
+        System.out.println("=> " + name);
+        System.out.print("raiz ");
         return PesquisarcaminharPre(name, raiz);
     }
 
