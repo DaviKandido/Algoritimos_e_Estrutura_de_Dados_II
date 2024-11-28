@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
+#include <sys/types.h>
 #include <time.h>
 
 
@@ -286,178 +288,188 @@ void GravarArquivoDeExecucao(const char *Filename, long timeTotal) {
 }
 
 
-// ------------------------------------  Célula Flexível -------------------------------------------- //
+// ------------------------------------  Struct No AVL -------------------------------------------- //
 
-typedef struct Celula {
+typedef struct No {
     Pokemon *pokemon;
-    struct Celula *prox;
-}Celula;
+    struct No *esq, *dir;
+    int nivel;
+}No;
 
-Celula *new_Celula(Pokemon *pokemon) {
-    Celula *temp = (Celula*)malloc(sizeof(Celula));
+No *set_No(Pokemon *pokemon, No *esq, No *dir, int nivel) {
+    No *temp = (No*)malloc(sizeof(No));
     temp->pokemon = pokemon;
-    temp->prox = NULL;
+    temp->dir = dir;
+    temp->esq = esq;
+    temp->nivel = nivel;
+
+    Movimentacoes+=3;
     return temp;
 }
 
-// ------------------------------------ END - Célula Flexível -------------------------------------------- //
+No *new_No(Pokemon *pokemon) {
+    return set_No(pokemon, NULL, NULL, 1);
+}
+
+int getNivel(No *no){
+    return (no == NULL) ? 0 : no->nivel;
+}
+
+void setNivel(No *no){
+    if (no != NULL) {
+        no->nivel = 1 + (getNivel(no->esq) > getNivel(no->dir) ? getNivel(no->esq) : getNivel(no->dir));
+    }
+}
 
 
-// ------------------------------------ Lista Flexível -------------------------------------------- //
+
+// ------------------------------------ END - Struct No AVL -------------------------------------------- //
+
+
+// ------------------------------------ Arvore AVL -------------------------------------------- //
 
     /**
-    * Lista Flexivel
+    * Arvore AVL
     * @author Davi Cândido de almeida
     * @version 2 10/2024
     */
 
 
-    typedef struct Lista{
-        struct Celula *primeiro, *ultimo;
-        int size;
-    }Lista;
+    No* raiz;
 
-    Lista new_Lista(){
-        Lista temp;
-        temp.primeiro = temp.ultimo = new_Celula(NULL);
-        temp.size = 0;
-        return temp;
+
+   void start(){
+        raiz = NULL;
     }
 
-    int size_lista(Lista *lista){
-        return lista->size;
-    }
 
-    void inserirInicio(Lista *lista, Pokemon *pokemon){
-        Celula *temp = new_Celula(pokemon);
-        temp->prox = lista->primeiro;
-
-        lista->primeiro->pokemon = pokemon;
-
-        lista->primeiro = temp;
-        lista->size++;
-    }
-
-    void inserirFim(Lista *lista, Pokemon *pokemon){
-        lista->ultimo->prox = new_Celula(pokemon);
-        lista->ultimo = lista->ultimo->prox;
-        lista->size++;
-    }
-
-    void inserir(Lista *lista, Pokemon *pokemon, int pos){
-        if(pos < 0 || pos > lista->size)
-            printf("Erro ao tentar inserir na posicao (%d/ tamanho = %d) invalida!", pos, lista->size);
-        else if (pos == 0)
-            inserirInicio(lista, pokemon);
-        else if (pos == lista->size)
-            inserirFim(lista, pokemon);
-        else{
-        
-        Celula *ant = lista->primeiro;
-        for(int i = 0; i < pos; i++){
-            ant = ant->prox;
-        }
-        Celula *temp = new_Celula(pokemon);
-        temp->prox = ant->prox;
-        ant->prox = temp;
-        lista->size++;
-        
+    bool pesquisarRec(char* name, No* i){
+        bool resp;
+        if(i == NULL){
+            resp = false;
+        }else if(strcmp(name, i->pokemon->name) == 0){
+            Comparacoes++;
+            resp = true;
+        }else if(strcmp(name, i->pokemon->name) < 0){
+            Comparacoes++;
+            printf("esq ");
+            resp = pesquisarRec(name, i->esq);
+        }else{
+            Comparacoes+=2;
+            printf("dir ");
+            resp = pesquisarRec(name, i->dir);
         }
 
-    }
-
-    Pokemon *remover(Lista *lista, int pos){
-        
-
-        if(lista->primeiro == lista->ultimo){
-            printf("\nA lista esta vazia!\n");
-            return 0;
-        }else if(pos < 0 || pos > lista->size-1)
-            printf("Erro ao tentar remover item da posicao (%d/ tamanho = %d) invalida!", pos, lista->size);
-        else{
-
-            Celula *ant = lista->primeiro;
-            for(int i = 0; i < pos; i++)
-                ant = ant->prox;
-
-            Celula *temp = ant->prox;
-            Pokemon *pokemon = temp->pokemon;
-            ant->prox = temp->prox;
-            free(temp);
-
-            if(pos == lista->size-1)    
-                lista->ultimo = ant;
-            lista->size--;
-
-            return pokemon;
-        }
-
-    }
-
-    Pokemon* removerInicio(Lista *lista){
-        return remover(lista, 0);
-    }
-
-    Pokemon* removerFim(Lista *lista){
-        return remover(lista, lista->size-1);
-    }
-
-    bool pesquisar_lista(Lista *lista, Pokemon *pokemon){
-        Celula *i;
-        for (i = lista->primeiro->prox; i != NULL; i = i->prox)
-            if(i->pokemon == pokemon)
-                return true;
-        return false;
+        return resp;
     }
 
 
-    void print_lista(Lista *l){
-        Celula *i;
-        int count = 0;
-        for (i = l->primeiro->prox; i != NULL; i = i->prox)
-        {
-            
-        printf("[%d] ", count++);
-        printf("[#%d -> %s: %s - ", i->pokemon->id, i->pokemon->name, i->pokemon->description);
+    bool pesquisar(char* name){
+        printf("%s\n",name);
+        printf("raiz ");
+        return pesquisarRec(name, raiz);
+    }
 
-        // Imprime os tipos
-        printf("['%s'", i->pokemon->type[0]);
-        if (strlen(i->pokemon->type[1]) > 0) {
-            printf(", '%s'", i->pokemon->type[1]);
-        }
-        printf("] - ");
+    //-----Caminhar central========
 
-        // Imprime as habilidades
-        printf("[");
-        for (int j = 0; strlen(i->pokemon->abilities[j]) > 0; j++) {
-            printf("'%s'", i->pokemon->abilities[j]);
-            if (strlen(i->pokemon->abilities[j + 1]) > 0) {
-                printf(", ");
+    void caminharCentralRecRec(No* i) {
+		if (i != NULL) {
+			caminharCentralRecRec(i->esq); // Elementos da esquerda.
+			printf("%s", i->pokemon->name); // Conteudo do no.
+			caminharCentralRecRec(i->dir); // Elementos da direita.
+		}
+	}
+    void caminharCentralRec(No *raiz) {
+		printf("[ ");
+		caminharCentralRecRec(raiz);
+		printf("]\n");
+	}
+    void caminharCentral() {
+
+		caminharCentralRec(raiz);
+
+	}
+
+
+    No* rotacionarDir(No* no){
+        No* noEsq = no->esq;
+        No* noEsqDir = noEsq->dir;
+
+        noEsq->dir = no;
+        no->esq = noEsqDir;
+        setNivel(no);
+        setNivel(noEsq);
+
+        Movimentacoes+=4;
+        return noEsq;
+    }
+
+    No* rotacionarEsq(No* no){
+        No* noDir = no->dir;
+        No* noDirEsq = noDir->esq;
+
+        noDir->esq = no;
+        no->dir = noDirEsq;
+        setNivel(no);
+        setNivel(noDir);
+
+        Movimentacoes+=4;
+        return noDir;
+    }
+
+
+    No* balancear(No* no){
+        if(no != NULL){
+            int fator = getNivel(no->dir) - getNivel(no->esq);
+            //se balanceada
+            if(fator >= -1 && fator <= 1){
+                setNivel(no);
+            }else if (fator == 2){
+                int fatorFilhoDir = getNivel(no->dir->dir) - getNivel(no->dir->esq);
+                // Se o filho a direita tambem estiver desbalanceado
+				if (fatorFilhoDir == -1) {
+					no->dir = rotacionarDir(no->dir);
+				}
+                no = rotacionarEsq(no);
+            }else if (fator == -2){
+                int fatorFilhoEsq = getNivel(no->esq->dir) - getNivel(no->esq->esq);
+                // Se o filho a esquerda tambem estiver desbalanceado
+                if(fatorFilhoEsq == 1){
+                    no->esq = rotacionarEsq(no->esq);
+                }
+                no = rotacionarDir(no);
+            }else{
+                printf("Erro no No( %s ) com fator de balanceamento ( %d ) invalido!", no->pokemon->name, fator);
+                exit(0);
             }
         }
-        printf("] - ");
 
-        printf("%.1lfkg - %.1lfm - %d%% - %s - %d gen] - %02d/%02d/%d\n", 
-            i->pokemon->weight, 
-            i->pokemon->height, 
-            i->pokemon->captureRate, 
-            i->pokemon->isLegendary ? "true" : "false", 
-            i->pokemon->generation,
-            i->pokemon->captureDate.dia, 
-            i->pokemon->captureDate.mes, 
-            i->pokemon->captureDate.ano);
+        return no;
+    }
+
+
+    No* inserirRec(Pokemon *pokemon, No* i){
+        if(i == NULL){
+            i = new_No(pokemon);
+        } else if( strcmp(pokemon->name, i->pokemon->name) < 0){
+            i->esq = inserirRec(pokemon, i->esq);
+        } else if( strcmp(pokemon->name, i->pokemon->name) > 0){
+            i->dir = inserirRec(pokemon, i->dir);
+        } else{
+            printf("Erro ao insirir");
+            exit(0);
         }
+
+        return balancear(i);
     }
 
-    void delete_lista(Lista *lista){
-        while(lista->size > 0)
-            remover(lista,0);
 
-        free(lista->primeiro);
-
+    void inserir(Pokemon *pokemon){
+        raiz = inserirRec(pokemon, raiz);
     }
 
-// ------------------------------------ END - Lista liner -------------------------------------------- //
+
+// ------------------------------------ END - Arvore AVL -------------------------------------------- //
 
 int main(void) {
 
@@ -467,98 +479,37 @@ int main(void) {
 
     Pokemon* pokemons = lerTodoArquivo(FILE_PATH);
 
-    Lista listaPokemons = new_Lista();
+    start();
 
     char entrada[30];
     int id;
+
+    startClock = clock();
     
     while (scanf("%s", entrada) && !isFim(entrada)) {
         sscanf(entrada, "%d", &id);
 
-        inserirFim( &listaPokemons, procurar(pokemons, id));
-    }
-
-
-    startClock = clock();
-
-    int numOp = 0;
-
-    Pokemon *pokesExcluidos[50];
-    int k = 0;
-
-    scanf("%d", &numOp);
-
-        for(int j = 0; j < numOp; j++){
-
-
-            char* op = (char*) malloc(sizeof(char) * 3);
-            scanf("%s", op);
-
-            Comparacoes++;
-
-            if(strcmp(op, "II") == 0){
-
-                int num;
-                scanf("%d", &num);
-                Movimentacoes++;
-                inserirInicio(&listaPokemons, procurar(pokemons, num));
-
-            } else  Comparacoes++; if(strcmp(op, "IF") == 0){ 
-
-                int num;
-                scanf("%d", &num);
-                Movimentacoes++;
-                inserirFim(&listaPokemons, procurar(pokemons, num));
-
-            }else  Comparacoes++; if(strcmp(op, "RI") == 0){
-
-                Movimentacoes++;
-                pokesExcluidos[k++] = removerInicio(&listaPokemons);
-
-            }else  Comparacoes++; if(strcmp(op, "RF") == 0){
-
-                Movimentacoes++;
-                pokesExcluidos[k++] = removerFim(&listaPokemons);
-
-            }else  Comparacoes++; if(strcmp(op, "I*") == 0){
-
-                int pos ;
-                scanf("%d", &pos);
-                int num ;
-                scanf("%d", &num);
-                Movimentacoes++;
-                inserir(&listaPokemons, procurar(pokemons, num), pos);
-
-            }else  Comparacoes++; if(strcmp(op, "R*") == 0){
-
-                int pos;
-                scanf("%d", &pos);
-                Movimentacoes++;
-                pokesExcluidos[k++] = remover(&listaPokemons, pos);
-
-            }
-
-            free(op);
-        }
-
-
-    for(int i = 0; i < k; i++){
-        printf("(R) %s\n", pokesExcluidos[i]->name);
+        inserir(procurar(pokemons, id));
     }
 
 
 
-    print_lista(&listaPokemons);
+
+    while (scanf("%s", entrada) && !isFim(entrada)) {
+
+        bool resp = pesquisar(entrada);
+
+        printf("%s\n", resp ? "SIM" : "NAO");
+    }
 
 
     endClock = clock();
 
 
-
     // Finaliza a contagem do tempo
     timeTotal = ((double)(endClock - startClock));
 
-    GravarArquivoDeExecucao("857859_AlocacaoFlexivel.txt", timeTotal);
+    GravarArquivoDeExecucao("857859_avl.txt", timeTotal);
 
     free(pokemons);
 
