@@ -8,7 +8,7 @@ Projetos Práticos: Documentação e códigos dos projetos práticos desenvolvid
 Exercícios: Listas de exercícios resolvidos com explicações passo a passo, abordando desde problemas básicos até desafios mais complexos.
 Recursos Adicionais: Links e materiais complementares para aprofundar os estudos, como artigos, tutoriais e vídeos.
 🚀 Tecnologias Utilizadas
-[Linguagens de Programação: C, C++, Python, etc.]
+[Linguagens de Programação: C, C++, java, etc.]
 [Ferramentas de Desenvolvimento: IDEs, compiladores, etc.]
 🎯 Objetivo
 Este repositório serve como um recurso centralizado para revisar e aplicar os conceitos aprendidos em Algoritmos e Estruturas de Dados 2. É também uma excelente base para preparação para provas e projetos futuros.
