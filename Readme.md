@@ -6,7 +6,7 @@ Aulas Teóricas: Notas e resumos das aulas teóricas, incluindo explicações de
 Implementações: Códigos de implementação das principais estruturas de dados (como árvores, grafos, heaps, etc.) e algoritmos estudados (busca, ordenação, etc.).
 Projetos Práticos: Documentação e códigos dos projetos práticos desenvolvidos ao longo do semestre, com foco na aplicação dos conceitos em problemas reais.
 Exercícios: Listas de exercícios resolvidos com explicações passo a passo, abordando desde problemas básicos até desafios mais complexos.
-Recursos Adicionais: Links e materiais complementares para aprofundar os estudos, como artigos, tutoriais e vídeos.
+Recursos Adicionais: Links e materiais complementares para aprofundar os estudos, como exemplos e slides.
 🚀 Tecnologias Utilizadas
 [Linguagens de Programação: C, C++, java, etc.]
 [Ferramentas de Desenvolvimento: IDEs, compiladores, etc.]
