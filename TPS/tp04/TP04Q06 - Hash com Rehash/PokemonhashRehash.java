@@ -22,7 +22,7 @@
 
 
  
- public class PokemonHashReserva {
+ public class PokemonhashRehash {
     
     //Grava arquivo com parâmetros de Execução
     public static void GravarArquivoDeExecucao(String filename, int Comparacoes, int Movimentacoes, long FimTime ){
@@ -98,7 +98,7 @@
 
     
 
-        GravarArquivoDeExecucao("857859_hashReserva.txt", VariaveisGlobais.comparacoes, VariaveisGlobais.movimentacoes, FimTime); //Arquivo de analise de Execução
+        GravarArquivoDeExecucao("857859_hashRehash.txt", VariaveisGlobais.comparacoes, VariaveisGlobais.movimentacoes, FimTime); //Arquivo de analise de Execução
 
 
        }
@@ -130,22 +130,19 @@ class VariaveisGlobais {
 
 class Hash{
     private Pokemon tabela[];
-    int m1, m2, m, reserva;
+    int m;
     final Pokemon NULO = new Pokemon();
 
     public Hash(){
-        this(21, 9); // Tabeça de tamanho 21 e reserva 9
+        this(21); // Tabeça de tamanho 21 e reserva 9
     }
 
-    public Hash(int m1, int m2){
-        this.m1 = m1;     // Tamanho da tabela principal
-        this.m2 = m2;     // Tamanho reserva
-        this.m = m1 + m2; // Tamanho maximo
+    public Hash(int m){
+        this.m = m; // Tamanho maximo
         this.tabela = new Pokemon[this.m];
         for(int i = 0; i < m; i++){
             tabela[i] = NULO;
         }
-        reserva = 0;
     }
 
     public int h(String name){
@@ -153,7 +150,15 @@ class Hash{
         int soma = 0;
         for(int i = 0; i < name.length(); soma += (int) name.charAt(i), i++);
 
-        return  soma % m1;
+        return  soma % m;
+    }
+
+    public int reh(String name){
+
+        int soma = 0;
+        for(int i = 0; i < name.length(); soma += (int) name.charAt(i), i++);
+
+        return  ++soma % m;
     }
 
     public boolean inserir(Pokemon pokemon){
@@ -163,10 +168,12 @@ class Hash{
             if(tabela[pos] == NULO){
                 tabela[pos] = pokemon;
                 resp = true;
-            } else if( reserva < m2){
-                tabela[m1 + reserva] = pokemon;
-                reserva++;
-                resp = true; 
+            } else {
+                pos = reh(pokemon.getName());
+                if(tabela[pos] == NULO){
+                    tabela[pos] = pokemon;
+                    resp = true;
+                }
             }
         }
 
@@ -181,14 +188,13 @@ class Hash{
         if(tabela[pos].getName().equals(name)){
             resp = true;
             posResp = pos;
-        }else VariaveisGlobais.comparacoes++; if (tabela[pos] != NULO){
-            for(int i = 0; i < reserva; i++){
-                if(tabela[m1 + i].getName().equals(name)){
-                    resp = true;
-                    posResp = (m1 + i);
-                    i = reserva;
-                }
-            }
+        }else if (tabela[pos] != NULO){
+            pos = reh(name);
+            VariaveisGlobais.comparacoes+=2;
+            if (tabela[pos].getName().equals(name)) {
+                resp = true;
+                posResp = pos;
+             }
 
         }
         return resp ? posResp : -1;
